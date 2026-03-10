@@ -1,0 +1,119 @@
+// =============================================================================
+// Module Name:  nco_spvm
+// Description:  Numerically Controlled Oscillator (NCO) utilizing 
+//               Quarter-Wave Symmetry Lookup Tables.
+//
+// Revision History:
+// -----------------------------------------------------------------------------
+// Version | Date       | Author   | Description
+// -----------------------------------------------------------------------------
+// 1.0     | 2026-01-06 | HW_Dev   | Initial release. Pipelined architecture with 
+//                                 3-cycle latency (Addr Gen, ROM, Sign Adj).
+// 1.1     | 2026-02-26 | HW_Dev   | Optimized for Type I PLL. Converted Addr Gen
+//                                 and Sign Adj to combinational logic to reduce 
+//                                 latency. Added clk_en support.
+// -----------------------------------------------------------------------------
+//
+// Parameters:
+//   - WORD_SIZE: 18 bits (Signed output resolution)
+//   - ADDR_SIZE: 10 bits (ROM address depth per quadrant)
+//   - ACC_SIZE:  32 bits (Phase accumulator width)
+//
+// Architecture:
+//   - Accumulator: 32-bit adder provides a frequency resolution of 
+//                  f_clk / 2^32.
+//   - Phase Map:   Top 2 bits of phase_acc manage quadrant symmetry.
+//                  Bit [31] : Sign selection
+//                  Bit [30] : Address mirroring
+//   - Look-up:     1024-word ROM (10-bit address) effectively yields 12-bit 
+//                  phase resolution with symmetry logic.
+//   - Latency:     Reduced (Combinational Addr Gen & Sign Adj).
+//
+// Performance Metrics (Theoretical):
+//   - SQNR:        ~110.1 dB (Based on 18-bit amplitude quantization)
+//   - SFDR:        ~72.0 dB  (Based on 10-bit phase truncation)
+//
+// Target App:   Three-phase IPLL / Grid-Synchronization Control Loops.
+// =============================================================================
+
+module nco_spvm #(
+    parameter WORD_SIZE = 18,
+    parameter ADDR_SIZE = 10,
+    parameter ACC_WIDTH = 32
+)(
+    input  wire clk,
+    input  wire clk_en,
+    input  wire reset,
+    input  wire signed [ACC_WIDTH-1:0] fcw, 
+    output wire signed [WORD_SIZE-1:0] sine,   
+    output wire signed [WORD_SIZE-1:0] cosine  
+);
+
+    localparam SIGN_BIT   = ACC_WIDTH - 1; // Bit 31
+    localparam MIRROR_BIT = ACC_WIDTH - 2; // Bit 30
+    localparam ADDR_START = ACC_WIDTH - 3; // Bit 29
+    localparam COS_OFFSET = 32'hC000_0000;
+
+    // ----- Accumulators ----- //
+    reg  [ACC_WIDTH-1:0] phase_acc; 
+    wire [ACC_WIDTH-1:0] phase_cos;
+
+    // ----- Data ----- //
+    wire signed [WORD_SIZE-1:0] data_sin, data_cos;
+
+    // ----- Pipelines ----- //
+    reg sin_sign_pipe;
+    reg cos_sign_pipe;
+
+    // ----- Phase Accumulators ----- //
+    /*
+    always @(posedge clk) begin
+        if (reset) begin
+            phase_acc <= 0;
+        end else if (clk_en) begin   
+            phase_acc <= phase_acc + fcw;
+        end
+    end
+	*/
+    
+	 always @(posedge clk) begin
+        if (reset) begin
+            phase_acc <= 0;
+        end else begin   
+            phase_acc <= phase_acc + fcw;
+        end
+    end
+
+
+    assign phase_cos = phase_acc + COS_OFFSET; 
+
+    // ----- Combinational Address Generation ----- //
+    wire [ADDR_SIZE-1:0] addr_sin = phase_acc[MIRROR_BIT] ? 
+        ~phase_acc[ADDR_START:ADDR_START-ADDR_SIZE+1] : phase_acc[ADDR_START:ADDR_START-ADDR_SIZE+1];
+    wire [ADDR_SIZE-1:0] addr_cos = phase_cos[MIRROR_BIT] ? 
+        ~phase_cos[ADDR_START:ADDR_START-ADDR_SIZE+1] : phase_cos[ADDR_START:ADDR_START-ADDR_SIZE+1];
+
+    // ----- Sign Selection ----- //
+    always @* begin
+        if (reset) begin
+            sin_sign_pipe <= 0;
+            cos_sign_pipe <= 0;
+        end else begin
+            sin_sign_pipe <= phase_acc[SIGN_BIT];
+            cos_sign_pipe <= phase_cos[SIGN_BIT];
+        end
+    end
+
+    sine_rom lut (
+        .clk(clk),
+        .addr_a(addr_sin),
+        .data_a(data_sin),
+        .addr_b(addr_cos),
+        .data_b(data_cos)
+    );
+
+    // ----- Combinational Amplitude Negation ----- //
+    assign cosine = sin_sign_pipe ? -data_sin : data_sin;
+    assign sine   = cos_sign_pipe ? -data_cos : data_cos;
+
+endmodule

@@ -1,0 +1,15 @@
+# Ignore Quartus build folders
+db/
+incremental_db/
+output_files/
+simulation/
+
+# Ignore Quartus reports and workspace settings
+*.rpt
+*.summary
+*.smsg
+*.jdi
+*.pin
+*.qws
+*.done
+*.sld

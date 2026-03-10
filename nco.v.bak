@@ -1,0 +1,55 @@
+module noc (
+	input wire clk,
+	input wire reset_n,
+	input wire [31:0] fcw, // Frequency Control Word
+	output reg signed [15:0] sine,
+	output reg signed [15:0] cosine,
+);
+
+localparam OFFSET = 32'h4000_0000;
+
+reg [31:0] phase_acc, phase_cos;
+wire [9:0] addr_sin, addr_cos;
+
+//===== Phase Accumulator =====//
+always @ (posedge clk or negedge reset_n)
+	if (!reset_n)
+		phase_acc <= 32'h0;
+	else
+		phase_acc <= phase_acc + fcw;
+
+assign phase_cos = phase_acc + OFFSET; // Add 90 degrees to current phase
+
+//===== Mirroring =====//
+always @ (posedge clk)
+	quad_1 <= phase_acc[31:22];
+
+always @ (posedge clk)
+	if (phase_acc[30])
+		rom_addr <= ~phase_acc[
+
+
+
+
+
+
+
+// Extracting LUT addresses (10 MSB)
+assign addr_sin = phase_acc[31:22];
+assign addr_cos = phase_cos[31:22];
+
+//===== Lookup Table =====//
+reg signed [15:0] sin_rom [0:1023];
+reg signed [15:0] cos_rom [0:1023];
+
+initial begin
+	$readmemh("sine_data.hex", sine_rom);
+end
+
+always @ (posedge clk)
+	sine <= sin_rom[addr_sin];
+
+always @ (posedge clk)
+	cosine <= sin_rom[addr_cos];
+
+endmodule

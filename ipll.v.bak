@@ -1,0 +1,16 @@
+module ipll (
+	input wire clk,
+	input wire [15:0] quad,
+	output reg [15:0] phase
+);
+
+`ifndef IPLL_COEFFS_VH
+`define IPLL_COEFFS_VH
+
+`define COEFF_DAMP	16'sd0
+`define COEFF_PROP	16'sd0
+`define COEFF_INERT	16'sd0
+`define COEFF_INTEG	16'sd0
+
+`endif
+

@@ -1,0 +1,46 @@
+module dqz #(
+	parameter WORD_SIZE = 18
+)(
+	input  wire clk,
+	input  wire reset,
+	input  wire [WORD_SIZE-3:0] sine, cosine, // sin and cosine are 1s17 I think - I made them 1s15 right now for simplicity
+	input  wire signed [WORD_SIZE-3:0] a_in, // 1s15 15:0
+	input  wire signed [WORD_SIZE-3:0] b_in,
+	input  wire signed [WORD_SIZE-3:0] c_in,
+	input  wire signed [WORD_SIZE-1:0] theta, // 1s17
+	output wire signed [WORD_SIZE-1:0] d_out, 
+	output wire signed [WORD_SIZE-1:0] q_out  // 2s16
+);
+
+localparam signed THIRD		 = 18'sd87381; // 0s18
+localparam signed SQRT_THIRD = 18'sd75674; // 1s17
+
+//wire signed [WORD_SIZE-1:0] alpha = ($signed({a_in[15], a_in[15], a_in}) <<< 1) - $signed({b_in[15], b_in[15], b_in}) - $signed({c_in[15], c_in[15], c_in});
+wire signed [WORD_SIZE-1:0] alpha = (a_in <<< 1) - b_in - c_in;
+//wire signed [WORD_SIZE-1:0] beta  = $signed({c_in[15], c_in[15], c_in}) - $signed({b_in[15], b_in[15], b_in});
+wire signed [WORD_SIZE-1:0] beta  = c_in - b_in;
+
+wire signed [2*WORD_SIZE-1:0] third_alpha     = THIRD * alpha; //3s33
+wire signed [2*WORD_SIZE-1:0] sqrt_third_beta = SQRT_THIRD * beta; //4s32
+
+wire signed [2*WORD_SIZE-1:0] alpha_sin = $signed(third_alpha[34:17]) * $signed({cosine, 1'b0, 1'b0});
+//wire signed [2*WORD_SIZE-1:0] alpha_sin = $signed(third_alpha[2*WORD_SIZE-1:WORD_SIZE]) * sine;
+
+wire signed [2*WORD_SIZE-1:0] beta_cos  = $signed(sqrt_third_beta[33:16]) * $signed({sine, 1'b0, 1'b0});
+//wire signed [2*WORD_SIZE-1:0] beta_cos  = $signed(sqrt_third_beta[2*WORD_SIZE-2:WORD_SIZE-1]) * cosine; // sharp output error
+
+wire signed [2*WORD_SIZE-1:0] inter_d = alpha_sin + beta_cos; // This math would give you q 
+
+assign d_out = $signed(inter_d[2*WORD_SIZE-1:WORD_SIZE]);
+
+/*
+nco nco_1 (
+	.clk(clk),
+	.reset_n(reset_n),
+	.fcw(theta),
+	.sine(sine),
+	.cosine(cosine)
+);
+*/
+
+endmodule
