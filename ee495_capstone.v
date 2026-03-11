@@ -70,12 +70,12 @@ end
 (* noprune *) wire loading;         // High when reading/converting
 (* noprune *) wire RD;
 (* noprune *) wire CONVST;
-(* noprune *) wire = u_high;
-(* noprune *) wire = u_low;
-(* noprune *) wire = v_high;
-(* noprune *) wire = v_low;
-(* noprune *) wire = w_high;
-(* noprune *) wire = w_low;
+(* noprune *) wire u_high;
+(* noprune *) wire u_low;
+(* noprune *) wire v_high;
+(* noprune *) wire v_low;
+(* noprune *) wire w_high;
+(* noprune *) wire w_low;
 
 // Interconnect wires for the DSP chain
 (* noprune *) wire signed [17:0] d_out; //1s15 - from dqz to ipll and spvm
@@ -83,6 +83,8 @@ end
 (* noprune *) wire signed [31:0] freq_out; // freq out as a 0s32 number (cycles/sample) - 60/720 * 2^32 - as an example
 (* noprune *) wire signed [17:0] nco_sine; // From dqz
 (* noprune *) wire signed [17:0] nco_cosine; // From dqz
+
+
 
 // Inputs from external hardware
 (* noprune *) wire BUSY     = GPIO[20];
@@ -95,13 +97,12 @@ assign GPIO[22] = CONVST;
 (* noprune *) assign GPIO[35] = reset_pin;
 //assign GPIO[35] = ~KEY[0]; //reset;
 
-
 (* noprune *) assign GPIO[17] = u_high;
 (* noprune *) assign GPIO[23] = u_low;
 (* noprune *) assign GPIO[19] = v_high;
 (* noprune *) assign GPIO[24] = v_low;
 (* noprune *) assign GPIO[21] = w_high;
-(* noprune *) assign GPIO[26] = w_low;
+(* noprune *) assign GPIO[25] = w_low;
 
 
 /************** MODULE INSTANTIATIONS
@@ -139,8 +140,6 @@ dqz #(
     .a_in(VA),      // Passing 16-bit ADC values directly
     .b_in(VB),
     .c_in(VC),
-	 //.sine(nco_sine),
-	 //.cosine(nco_cosine),
     .freq_in(freq_out), // Taking the frequency/phase output from the IPLL
     .d_out(d_out),
     .q_out(q_out)
