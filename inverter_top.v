@@ -15,7 +15,7 @@ module inverter_top #(
     output wire w_high, w_low
 );
 
-localparam DEAD_TIME_CYCLES = 75; //125 also works
+localparam DEAD_TIME_CYCLES = 125; //1250;
 
 wire pwm_u, pwm_v, pwm_w;
 

@@ -64,9 +64,7 @@ always @(posedge clk or posedge reset) begin
 			// Stage 1: Multiply coefficients
 			// ==========================================
 			
-			x_in = $signed(-q_in); // There is very obviously an error in x_in here. 
-			// Still unsure wether this should be minus or not
-			// Scaled down the step response - got a much different result - oscillations in q are slower
+			x_in = $signed(-q_in); 
 			
 			// Numerator: b0*x[n] + b1*x[n-1] + b2*x[n-2]
 			b0_mult = B0 * (x_in);
@@ -111,7 +109,6 @@ always @(posedge clk or posedge reset) begin
 	end
 end
 
-// Looks like we don't want werr to be continually moving downward if our q in is a sinusoid. In fact we likely want it to oscillate instead
 // ----- Frequency Output ----- //
 always @(posedge clk or posedge reset) begin
 	if (reset) begin
@@ -120,9 +117,6 @@ always @(posedge clk or posedge reset) begin
 		freq_out <= CENTRE_FREQ + $signed(freq_err); // Subtracting this also didn't work - go figure
 	end
 end
-
-
-// Testing: Scaled down grid jump - from 60 to 58 to 60 to 59.5
 
 endmodule
 

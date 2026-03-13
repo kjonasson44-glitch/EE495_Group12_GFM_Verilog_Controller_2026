@@ -20,8 +20,25 @@ module carrier_nco #(
     
     // Extract the phase ramp (17 bits needed for 2^17-1 range)
     wire [WORD_SIZE-2:0] ramp = phase_acc[ACC_WIDTH-3 : ACC_WIDTH-WORD_SIZE-1];
-  
-    always @(posedge clk or posedge reset) begin
+
+    /*
+    always @(posedge clk) begin
+        if (reset) begin
+            phase_acc <= 0;
+            carrier <= 0;
+        end else if (clk_en) begin
+            phase_acc <= phase_acc + fcw;
+            case (quadrant)
+                2'b00: carrier <= $signed({1'b0, ramp});           // Up   0 -> 131071
+                2'b01: carrier <= $signed(131071 - ramp);          // Down 131071 -> 0
+                2'b10: carrier <= $signed(-{1'b0, ramp});          // Down 0 -> -131071
+                2'b11: carrier <= $signed(-131071 + ramp);         // Up   -131071 -> 0
+            endcase
+        end
+    end
+    */
+    
+    always @(posedge clk) begin
         if (reset) begin
             phase_acc <= 0;
             carrier <= 0;

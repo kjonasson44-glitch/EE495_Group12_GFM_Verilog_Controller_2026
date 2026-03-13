@@ -44,16 +44,16 @@ end
 /****************** RESET STUFF
 ********************************/
 
-(* noprune *) wire reset; // This is a wire in adc_reader and we do nothing with it
+(* noprune *) reg reset; // This is a wire in adc_reader and we do nothing with it
 (* noprune *) wire reset_pin;
-/*
+
 always @ * begin
     if (~KEY[0])
         reset = 1'b1; // Reset on a key push
     else
         reset = 1'b0; // Ensure reset goes low when key is released
 end
-*/
+
 /************** GPIO ASSIGNMENTS & WIRES
 ********************************/
 
@@ -84,8 +84,6 @@ end
 (* noprune *) wire signed [17:0] nco_sine; // From dqz
 (* noprune *) wire signed [17:0] nco_cosine; // From dqz
 
-
-
 // Inputs from external hardware
 (* noprune *) wire BUSY     = GPIO[20];
 (* noprune *) wire FRSTDATA = GPIO[16];
@@ -103,6 +101,16 @@ assign GPIO[22] = CONVST;
 (* noprune *) assign GPIO[24] = v_low;
 (* noprune *) assign GPIO[21] = w_high;
 (* noprune *) assign GPIO[25] = w_low;
+
+(* noprune *) assign GPIO[34] = 0;
+(* noprune *) assign GPIO[33] = 0;
+(* noprune *) assign GPIO[32] = 0;
+(* noprune *) assign GPIO[31] = 0;
+(* noprune *) assign GPIO[30] = 0;
+(* noprune *) assign GPIO[29] = 0;
+(* noprune *) assign GPIO[28] = 0;
+(* noprune *) assign GPIO[27] = 0;
+(* noprune *) assign GPIO[26] = 0;
 
 
 /************** MODULE INSTANTIATIONS
@@ -129,7 +137,7 @@ adc_reader inst_adc_reader (
   .loading(loading)
 );
 
-// dqz - converts three phase signals into the quadrature value we use - also has the NCO
+// dqz - converts three phase signals into the quadrature value we use - also has the NCO_dqz inside 
 dqz #(
     .WORD_SIZE(18),
     .ACC_WIDTH(32)
@@ -169,14 +177,13 @@ srf_pll_1 #(
     .q_in(q_out),     // Feeding the Q-axis error into the PLL
     .freq_out(freq_out)
 );
-
-
 */
 
 (* noprune *) wire signed [63:0] freq_out_fast_big = freq_out * FAST_CONV; // freq out - which is in cycles per sample at 720 samples/sec, into 25M samples/sec
 
 (* noprune *) wire signed [31:0] freq_out_fast = freq_out_fast_big[63:32]; // Top 32 bits after multiplication
 (* noprune *) wire signed [31:0] carrier_freq = freq_out_fast * CARRIER_CONV; // freq out fast multiplied by our modulation constant (75 I think)
+
 /*
 spwm - pulse width modulation - controls switches of inverter with GPIO
 */

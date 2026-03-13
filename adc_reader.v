@@ -40,13 +40,16 @@ module adc_reader (
     localparam S_READ_LOW       = 4; // Drive RD low
     localparam S_READ_CAPTURE   = 5; // Capture data, Drive RD high
     localparam S_UPDATE_OUTPUTS = 6; // Update final registers
+	 localparam S_READ_HOLD      = 7; // New state to provide a 1-clock delay
 
     reg [3:0] state;             // Current State
     reg [15:0] samp_timer;       // Timer for 720Hz
     reg [3:0] channel_index;     // Tracks which channel (0-7) we are reading
     
     // Temporary registers to hold data during the read process
-    reg signed [15:0] temp_data [0:7]; 
+    reg signed [15:0] temp_data [0:7];
+	 reg [1:0] rd_delay_cnt; // Added delay counter, adjust bit width for desired delay
+	 	 reg [1:0] rd_delay_cnt2; // Added delay counter, adjust bit width for desired delay
 
     // Synchronizer for asynchronous inputs
     reg busy_sync_1, busy_sync_2;
@@ -55,6 +58,7 @@ module adc_reader (
         busy_sync_2 <= busy_sync_1;
     end
     wire busy_clean = busy_sync_2;
+	 
 
     // ==========================================
     // Main State Machine
@@ -151,7 +155,21 @@ module adc_reader (
                 S_READ_LOW: begin
                     loading <= 1;
                     RD      <= 0; // Active Low
-                    state   <= S_READ_CAPTURE; 
+						  
+						  // Wait before capture
+						  if (rd_delay_cnt > 1) begin // Two clock cycles
+							   rd_delay_cnt <= 0;
+								state <= S_READ_CAPTURE;
+							end else begin
+								rd_delay_cnt <= rd_delay_cnt + 1;
+						  end
+						  // Added 1 clock delay to both read high and read low - noise is mostly gone - intermitent shutoff of everything still seen
+						  // B has weird floating issue
+						  
+						  // Adding extra clock delay to read low - DC offset appears gone (at first) - then back again.
+						  
+						  
+                    //state   <= S_READ_CAPTURE; // Older version
                 end
 
                 // ---------------------------------------------------------
@@ -165,11 +183,20 @@ module adc_reader (
                     temp_data[channel_index] <= DATA_IN;
                     
                     if (channel_index == 7) begin
-                        state <= S_UPDATE_OUTPUTS;
+                        state <= S_UPDATE_OUTPUTS; 
                     end else begin
                         channel_index <= channel_index + 1;
-                        state         <= S_READ_LOW;
+                        state         <= S_READ_HOLD; // Go to delay state instead of READ_LOW
                     end
+                end
+					 
+					 // ---------------------------------------------------------
+                // 6b. Read Hold: Wait 1 cycle with RD High
+                // ---------------------------------------------------------
+                S_READ_HOLD: begin
+                    loading <= 1;
+                    RD      <= 1;        // Keep RD high for this extra cycle
+                    state   <= S_READ_LOW; // Now return to start the next read
                 end
 
                 // ---------------------------------------------------------
@@ -178,14 +205,14 @@ module adc_reader (
                 S_UPDATE_OUTPUTS: begin
                     loading <= 0;
                     
-                    VA  <= temp_data[0]; 
-                    VB  <= temp_data[1]; 
-                    VC  <= temp_data[2]; 
-                    IA  <= temp_data[3]; 
-                    IB  <= temp_data[4]; 
-                    IC  <= temp_data[5]; 
-                    VDC <= temp_data[6]; 
-						  GARBAGE <= temp_data[7]; 
+                    VA  <= temp_data[0]; //Channel 1
+                    IA  <= temp_data[1]; //Channel 2
+                    VB  <= temp_data[2]; //Channel 3
+                    IB  <= temp_data[3]; //Channel 4
+                    VC  <= temp_data[4]; //Channel 5
+                    IC  <= temp_data[5]; //Channel 6
+                    VDC <= temp_data[6]; //Channel 7
+						  GARBAGE <= temp_data[7]; //Channel 8
                     
                     state <= S_IDLE;
                 end
@@ -207,14 +234,11 @@ module adc_reader (
 
 
 // We want to sample the signals at 720 Hz
-// I think our clock is 25 Mhz
 // Output CONVST needs to go high at an appropriate rate - which should be easily controllable. 
 // Output CONVST needs to go high when we need the ADC to read off another sample. 
 
 
-// Input busy - if busy is high - don't read onto anything, obviously 
-// Also just to be safe if CONVST is high - also don't read onto anything?
-
+// Input busy - if busy is high - don't read onto anything
 
 // When first data is high, read VA
 
@@ -229,18 +253,6 @@ that the conversion data is being latched into the output data registers and is 
 read after a Time t4. Any data read while BUSY is high must be completed before the falling
 edge of BUSY occurs. Rising edges on CONVST A or CONVST B have no effect while the
 BUSY signal is high
-WE HAVE TO WAIT FOR BUSY TO BE LOW BEFORE WE ARE READING - FOR SOME REASON WE ARE READING EVEN THOUGH BUSY IS HIGH
-
-ALSO, for some reason we are setting loading == high on the negative edge of CONVST, but loading should be set high on the negative 
-edge of BUSY. 
-
-Essentially we have to wait for the adc to complete its conversion, before our fpga can do its loading, but we are not doing that at all. 
-
-Otherwise it seems to work fine. 
-
-
-
-
 */ 
 
 endmodule

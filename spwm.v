@@ -48,32 +48,7 @@ module spwm #(
         .carrier(carrier_val)
     );
 
-    /*
-    localparam signed HALF_SQRT3 = 18'sh1_BB68;
-
-    wire signed [2*WORD_SIZE-1:0] alpha  = d_in * cosine + q_in * sine;
-    wire signed [2*WORD_SIZE-1:0] beta = d_in * -sine  + q_in * cosine;
-    wire signed [2*WORD_SIZE-1:0] beta_sqrt3 = $signed(beta[2*WORD_SIZE-1:WORD_SIZE]) * HALF_SQRT3;
-
-    // Stationary frame phases 
-    (* noprune *) wire signed [WORD_SIZE-1:0] a_out = $signed(alpha[2*WORD_SIZE-1:WORD_SIZE]);
-	 
-    (* noprune *) wire signed [WORD_SIZE-1:0] b_out = -($signed(alpha[2*WORD_SIZE-1:WORD_SIZE]) >>> 1) - $signed(beta_sqrt3[2*WORD_SIZE-2:WORD_SIZE-1]);
-	 
-    (* noprune *) wire signed [WORD_SIZE-1:0] c_out = -($signed(alpha[2*WORD_SIZE-1:WORD_SIZE]) >>> 1) + $signed(beta_sqrt3[2*WORD_SIZE-2:WORD_SIZE-1]);
-
-	 wire signed [WORD_SIZE-1:0] max_val = (a_out > b_out) ? ((a_out > c_out) ? a_out : c_out) : ((b_out > c_out) ? b_out : c_out);
-	 wire signed [WORD_SIZE-1:0] min_val = (a_out < b_out) ? ((a_out < c_out) ? a_out : c_out) : ((b_out < c_out) ? b_out : c_out);
-	 
-	 wire signed [WORD_SIZE-1:0] v_offset = (max_val + min_val) >>> 1;
-
-	 wire signed [WORD_SIZE-1:0] a_thi = a_out - v_offset;
-	 wire signed [WORD_SIZE-1:0] b_thi = b_out - v_offset;
-	 wire signed [WORD_SIZE-1:0] c_thi = c_out - v_offset;
-	 
-	 */
-
-    always @(posedge clk) begin
+    always @(posedge clk or posedge reset) begin
         if (reset) begin
             pwm_u <= 1'b0;
             pwm_v <= 1'b0;

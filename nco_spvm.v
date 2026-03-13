@@ -83,7 +83,7 @@ module nco_spvm #(
     reg c_sign_pipe; // Added
 
     // ----- Phase Accumulators ----- //
-    always @(posedge clk) begin
+    always @(posedge clk or posedge reset) begin
         if (reset) begin
             phase_acc_old <= 0;
         end else begin   

@@ -13,10 +13,10 @@ module srf_pll_1 (
     
     // Center Frequency: 59 Hz at 720 Hz sampling rate 
     // Calculation verified: (32'sd357913941 / 2^32) * 720 Hz ~= 60.0 Hz
-    localparam signed [31:0] CENTER_FREQ = 32'sd357913941; // [cite: 184, 199]
+    localparam signed [31:0] CENTER_FREQ = 32'sd357913941;
 
     // PI Controller Gains
-    // Note: Gains depend on input magnitude (Vm) and sampling time (Ts)[cite: 220, 235].
+    // Note: Gains depend on input magnitude (Vm) and sampling time (Ts)
     // Since Vq input scaling is strictly 18-bit, these gains are set to provide 
     // sufficient loop gain to drive the 1 Hz error (59Hz -> 60Hz) to zero.
     // They effectively implement Kp and Ki/Ts.
@@ -42,7 +42,7 @@ module srf_pll_1 (
     // MAIN LOGIC
     // =========================================================================
     
-    always @(posedge clk or negedge reset) begin // Reset issue here - negedge but expects positive
+    always @(posedge clk or posedge reset) begin // Reset issue here - negedge but expects positive
         if (reset) begin
             integrator <= 48'd0;
             freq_out   <= CENTER_FREQ;

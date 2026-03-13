@@ -29,9 +29,7 @@
 //
 // Target App:   Motor Control (FOC), Three-phase Inverters, Grid-Tie Systems.
 // =============================================================================
-// WE ARE ASSUMING THE VOLTAGE VECTOR ROTATES COUNTER CLOCKWISE
-
-// looks like in the one testbench they are 0.7 radians off, and q out and d out are both actually 1s15
+// We are assuming the voltage vector (and generator) rotates counter clockwise
 module dqz #(
 	parameter WORD_SIZE = 18,
 	parameter ACC_WIDTH = 32
