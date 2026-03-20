@@ -97,13 +97,27 @@ assign GPIO[22] = CONVST;
 (* noprune *) assign GPIO[35] = reset_pin;
 //assign GPIO[35] = ~KEY[0]; //reset;
 
+
+/* GFM 1.0 assignments - for older pcb - ignore
 (* noprune *) assign GPIO[17] = u_high;
 (* noprune *) assign GPIO[23] = u_low;
 (* noprune *) assign GPIO[19] = v_high;
 (* noprune *) assign GPIO[24] = v_low;
 (* noprune *) assign GPIO[21] = w_high;
 (* noprune *) assign GPIO[25] = w_low;
+*/ 
 
+(* noprune *) assign GPIO[29] = u_high;
+(* noprune *) assign GPIO[19] = u_low;
+
+(* noprune *) assign GPIO[25] = v_high;
+(* noprune *) assign GPIO[17] = v_low;
+
+(* noprune *) assign GPIO[21] = w_high;
+(* noprune *) assign GPIO[27] = w_low;
+
+
+(* noprune *) assign GPIO[25] = 0;
 (* noprune *) assign GPIO[34] = 0;
 (* noprune *) assign GPIO[33] = 0;
 (* noprune *) assign GPIO[32] = 0;
