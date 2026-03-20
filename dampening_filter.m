@@ -1,55 +1,5 @@
 clear; clc; close all;
 
-%{
-
-✅ 3️⃣ Optional: Normalize for Verilog Form
-
-MATLAB gives transfer function form:
-
-G(z)=b0z2+b1z+b2a0z2+a1z+a2
-G(z)=a0z2
-+a
-1
-	​
-
-z+a
-2
-	​
-
-b
-0
-	​
-
-z
-2
-+b
-1
-	​
-
-z+b
-2
-	​
-
-	​
-
-
-For Verilog you usually want:
-
-y[n]=b0x[n]+b1x[n−1]+b2x[n−2]−a1y[n−1]−a2y[n−2]
-y[n]=b0x[n]+b1x[n−1]+b2x[n−2]−a1y[n−1]−a2y[n−2]
-
-So you must normalize so that:
-
-a0=1
-a
-0
-	​
-
-=1
-
-%}
-
-
 % Parameters
 Ki = 1000;      
 Kp = 40;       
@@ -58,9 +8,9 @@ Ts = 1/Fs;
 t_final = 10; % Define the 10-second window
 
 % --- Comparison for Damping D ---
-J_fixed = 0.2;  % Through sheer experimental observation, J must be negative 
+J_fixed = 0.1;  % Through sheer experimental observation, J must be negative 
 % (for it to track properly)
-D_values = [2.0, 0.3, 0.01]; 
+D_values = [1.2, 0.3, 0.01]; 
 % With small inertia, and large dampening, the responses are not good
 
 % High vals of damp and low vals of J seem to give the responses we want
@@ -421,6 +371,7 @@ legend('sine_{nco}', 'cos_{nco}');
 xlim(x_zoom);
 
 %% Multi-Parameter Sweep: Testing J sensitivity
+%clear; clc; close all;
 
 % --- Constant Simulation Parameters ---
 Fs_sim = 720;
@@ -433,13 +384,13 @@ N_sim = length(t_vec);
 f_grid_actual = ones(1, N_sim) * 60; 
 f_grid_actual(t_vec >= 0.5) = 60.0; % 1 Hz step
 theta_grid = cumtrapz(t_vec, 2*pi * f_grid_actual);
-v_a = cos(theta_grid); 
-v_b = cos(theta_grid - 2*pi/3); 
-v_c = cos(theta_grid - 4*pi/3);
+v_a = 0.25*cos(theta_grid); 
+v_b = 0.25*cos(theta_grid - 2*pi/3); 
+v_c = 0.25*cos(theta_grid - 4*pi/3);
 
 % --- Sweep Parameters ---
 % CHANGE THIS to sweep D, Kp, etc.
-param_sweep = [0.05, 0.1, 0.2]; 
+param_sweep = 0.25*[0.05, 0.1, 0.2]; 
 sweep_label = 'J';
 
 % --- Pre-allocate Storage ---
@@ -456,7 +407,7 @@ for p = 1:length(param_sweep)
     
     % Update the specific variable for this run
     J_fixed = param_sweep(p); 
-    D_sim = 0.9; % Keep others constant
+    D_sim = 0.25*0.9; % Keep others constant
     Kp =40; Ki = 1000;
     
     % --- Re-calculate Coefficients for THIS run ---
@@ -530,7 +481,7 @@ end
 % ========================================================
 % ================= PLOTTING ALL RUNS ====================
 % ========================================================
-figure(10);
+figure();
 set(gcf, 'Color', 'w');
 
 % Subplot 1: Frequency Tracking
@@ -538,7 +489,7 @@ subplot(2,1,1);
 plot(t_vec, f_grid_actual, 'k--', 'LineWidth', 2); hold on;
 plot(t_vec, f_out_history', 'LineWidth', 1.5); % Note the transpose (')
 grid on; ylabel('Freq (Hz)');
-title(['PLL Response Sweep: Varying ', sweep_label]);
+title(['Quarter scale PLL Response Sweep: Quater scaled Varying ', sweep_label]);
 
 % Dynamic Legend Generation
 leg_entries = cell(1, length(param_sweep) + 1);
@@ -635,7 +586,7 @@ end
 % ========================================================
 % ================= PLOTTING ALL RUNS ====================
 % ========================================================
-figure(10); clf;
+figure(10);
 set(gcf, 'Color', 'w');
 
 % Subplot 1: Frequency Tracking
@@ -703,8 +654,8 @@ end
 %% 10. Hardware Verification Plot (with Smoothing)
 % Load the hardware data
 t = (0:N-1)'/fs; 
-fid = fopen('DQZ_TO_SPVM_59HZ_IPLL.txt', 'r');
-fid2 = fopen('DQZ_TO_SPVM_59HZ_SRF.txt', 'r');
+fid = fopen('MATH_CF_61_LONG_D09_J02.txt', 'r');
+fid2 = fopen('MATH_CF_61_LONG_D09_J01.txt', 'r');
 
 fid4 = fopen('MATH_CF_61_LONG_D12_J01.txt', 'r');
 fid5 = fopen('MATH_CF_61_LONG_D12_J005.txt', 'r');
@@ -1488,4 +1439,419 @@ title('Mechanical Power Input');
 subplot(3,1,3); grid on; ylabel('Delta (Hz)'); xlabel('Time (s)');
 title('Estimation Error');
 
+%% Closed-Loop PI Controller Response to Step and Ramp Voltage Changes
+clear; clc; close all;
 
+% 1. Define System Parameters
+V_nominal_rms = 120;                  % Nominal RMS Voltage
+V_ref = V_nominal_rms * sqrt(2);      % Reference Peak Voltage (~170 Volts)
+
+% PI Controller Gains
+Kp = 0.1;  % Proportional gain
+Ki = 3.0;  % Integral gain
+
+% Time vector setup
+dt = 0.01;         % Simulation time step (seconds)
+t = 0:dt:10;       % Simulate for 10 seconds
+N = length(t);     % Number of samples
+
+% 2. Scenario 1: Step Change
+% Create the varying voltage input: starts at 170V, steps down to 140V at t=2s
+V_step_input = V_ref * ones(1, N);
+step_start = find(t >= 2, 1);
+V_step_input(step_start:end) = 140; 
+
+% Initialize variables for Closed-Loop
+error_step = zeros(1, N);
+pi_out_step = zeros(1, N);
+V_out_step = zeros(1, N);
+integral_acc = 0; 
+
+% Initial Condition: Assume the system starts perfectly at the reference
+V_out_step(1) = V_ref; 
+
+% Run the Closed-Loop PI Controller
+for k = 2:N
+    % 1. Error = Input Voltage - Output of System (Negative Feedback)
+    error_step(k) = V_step_input(k) - V_out_step(k-1);
+    
+    % 2. Pass error through (Kp + Ki/s)
+    integral_acc = integral_acc + (error_step(k) * dt);
+    pi_out_step(k) = (Kp * error_step(k)) + (Ki * integral_acc);
+    
+    % 3. Add to Vreference (170V) to get final system output
+    V_out_step(k) = pi_out_step(k) + V_ref;
+end
+
+% 3. Scenario 2: Ramp Up and Down
+% Create the varying voltage input: starts at 170V, ramps to 190V, then back
+V_ramp_input = V_ref * ones(1, N);
+
+% Ramp up to 190V, then ramp back down
+idx_up = (t >= 2 & t < 4);
+V_ramp_input(idx_up) = V_ref + ((180 - V_ref) / 2) * (t(idx_up) - 2);
+idx_down = (t >= 4 & t < 6);
+V_ramp_input(idx_down) = 180 - ((180 - V_ref) / 2) * (t(idx_down) - 4);
+
+% Initialize variables
+error_ramp = zeros(1, N);
+pi_out_ramp = zeros(1, N);
+V_out_ramp = zeros(1, N);
+integral_acc = 0; % Reset integral accumulator
+
+% Initial Condition
+V_out_ramp(1) = V_ref;
+
+% Run the Closed-Loop PI Controller
+for k = 2:N
+
+    % 1. Error = Input Voltage - Output of System
+    error_ramp(k) = V_ramp_input(k) - V_out_ramp(k-1); % Delayed output
+    
+    % 2. Pass error through (Kp + Ki/s)
+    integral_acc = integral_acc + (error_ramp(k) * dt);
+    pi_out_ramp(k) = (Kp * error_ramp(k)) + (Ki * integral_acc);
+    
+    % 3. Add to Vreference
+    V_out_ramp(k) = pi_out_ramp(k) + V_ref;
+end
+
+% 4. Plotting the Results
+figure('Name', 'Closed-Loop PI Response', 'Position', [100, 100, 1000, 700]);
+
+% --- Step Change Plots ---
+subplot(3, 2, 1);
+plot(t, V_step_input, 'k--', 'LineWidth', 1.5); hold on;
+plot(t, V_out_step, 'b', 'LineWidth', 1.5);
+title('Tracking: Step Change');
+ylabel('Voltage (V)');
+legend('Target Input', 'System Output', 'Location', 'best');
+grid on;
+
+subplot(3, 2, 3);
+plot(t, error_step, 'r', 'LineWidth', 1.5);
+title('Error Signal (Input - Output)');
+ylabel('Error (V)');
+grid on;
+
+subplot(3, 2, 5);
+plot(t, (170 - pi_out_step), 'm', 'LineWidth', 1.5); % Subtract 170 from the output to get our actual amplitude 
+title('170 - PI Controller Action (Kp*e + Ki*int(e))');
+xlabel('Time (s)');
+ylabel('Control Effort (V)');
+grid on;
+
+% --- Ramp Change Plots ---
+subplot(3, 2, 2);
+plot(t, V_ramp_input, 'k--', 'LineWidth', 1.5); hold on;
+plot(t, V_out_ramp, 'b', 'LineWidth', 1.5);
+title('Tracking: Ramp Up/Down');
+ylabel('Voltage (V)');
+legend('Target Input', 'System Output', 'Location', 'best');
+grid on;
+
+subplot(3, 2, 4);
+plot(t, error_ramp, 'r', 'LineWidth', 1.5);
+title('Error Signal (Input - Output)');
+ylabel('Error (V)');
+grid on;
+
+subplot(3, 2, 6);
+plot(t, (170 - pi_out_ramp), 'm', 'LineWidth', 1.5);
+title('170 - PI Controller Action (Kp*e + Ki*int(e))');
+xlabel('Time (s)');
+ylabel('Control Effort (V)');
+grid on;
+
+sgtitle('Closed-Loop Tracking Performance (System Output = PI Action + V_{ref})');
+
+%{
+
+Questions:
+What does the adc read up to? 
+
+What corresponds to 120 rms in inputs?
+
+What is our current DC supply at? What does it output?
+
+Should I scale the carrier? Probably.
+
+Would we ever want to output more than 120 RMS? 
+
+Like say we have an  inverse problem where we need to output more voltage
+from the inverter, we wouldn't be able to do it, because our DC supply only
+gives us 170 max anyway. 
+
+
+Additionally, for startup, if our voltage is really low, the voltage
+control will try to jack it up really high (assuming we have that allowed
+in our DC supply) 
+
+I say we should go forward by ensuring the voltage out of the inverter
+never exceeds 125 VRMS. 
+
+
+
+How to get amplitude output:
+
+1. The Absolute Value Peak Detector (Simplest)
+
+This is the digital equivalent of a diode and a capacitor.
+ You take the absolute value of the incoming signal and keep track of 
+the highest value seen. To allow the tracker to follow the amplitude when 
+it decreases, you implement a "leak" (slow decay).
+
+Logic Flow:
+
+    Rectify the signal: abs_v = (vin[MSB]) ? -vin : vin;
+
+    If abs_v > current_max, then current_max <= abs_v.
+
+    Every N clock cycles, decrement current_max slightly (the decay).
+
+
+module AmplitudeTracker (
+    input wire clk,           // 25 MHz
+    input wire rst_n,
+    input wire signed [15:0] adc_in, 
+    output reg [15:0] amplitude
+);
+
+    reg [15:0] abs_val;
+    reg [19:0] decay_cnt;
+    parameter DECAY_RATE = 20'd1000000; // Adjust for tracking speed
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            abs_val   <= 16'd0;
+            amplitude <= 16'd0;
+            decay_cnt <= 20'd0;
+        end else begin
+            // 1. Rectification (Absolute Value)
+            abs_val <= (adc_in[15]) ? -adc_in : adc_in;
+
+            // 2. Peak Capture
+            if (abs_val > amplitude) begin
+                amplitude <= abs_val;
+                decay_cnt <= 20'd0; // Reset decay timer on new peak
+            end 
+            // 3. Slow Decay (allows tracking when amplitude drops)
+            else begin
+                if (decay_cnt >= DECAY_RATE) begin
+                    if (amplitude > 0) amplitude <= amplitude - 1'b1;
+                    decay_cnt <= 20'd0;
+                end else begin
+                    decay_cnt <= decay_cnt + 1'b1;
+                end
+            end
+        end
+    end
+endmodule
+
+
+Scale amplitude of carrier - or each peak individually - each peak is
+probably better. 
+
+But carrier is way easier. 
+
+Carrier cannot be less than full scale 
+
+
+Need to test what happens when you scale carrier vs when you scale outputs
+
+Think I should just scale the sinusoids. It is way easier. 
+Scale the sinusoids lower and it should lower the peak to peak voltage. 
+
+Get amplitude of all three phases
+Pass amplitudes through filter. 
+Use output of filter to scale sinusoids being PWM - CANNOT BE MORE THAN
+FULL SCALE - sinusoids should not have peak to peak greater than Carrier
+max - will max us out at DC supply. 
+
+How do I use the amplitude that it should be in order to control the
+amplitude that actually comes out?
+
+
+sin(wx)*1 - amplitude should be A, but it is 1. 
+%}
+
+
+%% Plotting
+
+figure('Name', 'Closed-Loop PI Response', 'Position', [100, 100, 1000, 700]);
+
+plot(t, V_ramp_input, 'k--', 'LineWidth', 1.5); hold on;
+plot(t, (170 - pi_out_ramp), 'b', 'LineWidth', 1.5);
+title('Tracking: Step Change');
+ylabel('Voltage (V)');
+legend('Potential Input', 'Filter Output', 'Location', 'best');
+grid on;
+
+%% Plot
+% --- Set default plotting properties for consistent quality ---
+% This ensures large, clear fonts throughout the figure without setting them for each element.
+set(groot, 'DefaultAxesFontSize', 14);     % Base font size for all axes elements
+set(groot, 'DefaultTextInterpreter', 'tex'); % Allow simple LaTeX-like formatting (\mu, ^2, etc.)
+set(groot, 'DefaultLegendInterpreter', 'tex');
+set(groot, 'DefaultLineLineWidth', 2);     % Thicker lines by default for better visibility
+set(groot, 'DefaultFigureColor', 'w');      % White figure background (crucial for slides)
+
+% --- Create the Enhanced Figure ---
+figure('Name', 'Closed-Loop PI Response', ...
+       'Position', [100, 100, 1000, 700], ... % Larger, prominent figure size
+       'Renderer', 'painters');            % High-quality vector rendering (good for zooming)
+
+% --- Generate the Main Plot ---
+% Use thicker lines and slightly different color/style combination for excellent contrast.
+plot(t, V_ramp_input, 'Color', [0.2 0.2 0.2], ... % Very dark gray (looks cleaner than pure black)
+                      'LineStyle', '--', ...
+                      'LineWidth', 4.0);         % Significantly thicker line
+hold on;
+plot(t, (170 - pi_out_ramp), 'Color', [0 0.4470 0.7410], ... % Standard MATLAB vibrant blue (very distinct)
+                             'LineStyle', '-', ...
+                             'LineWidth', 4.0);
+
+% --- Customize Axes and Labels ---
+title('\bfTracking Performance: Step Change and PI Control', ... % Bolder title, more descriptive
+      'FontSize',40, 'Interpreter', 'tex'); % Larger title font
+ylabel('\bfVoltage (V)', 'FontSize', 20);    % Bold label, distinct from tick marks
+xlabel('\bfTime (s)', 'FontSize', 20);        % Bold label, distinct from tick marks
+
+% Make the overall axes box look cleaner and bolder
+ax = gca; % Get current axes
+ax.Box = 'off'; % Removes the outer box, making the plot less "boxed-in"
+ax.LineWidth = 1.5; % Thicker axes lines
+ax.TickDir = 'out'; % Makes ticks point outwards for better visibility
+ax.FontWeight = 'bold'; % Make the numbers on the axis bold
+
+% Customize the grid (subtle but present)
+grid on;
+ax.GridLineStyle = '-';
+ax.GridColor = [0.8 0.8 0.8]; % Light gray grid lines (won't distract from data)
+ax.GridAlpha = 0.5;          % Make the grid semi-transparent
+
+% --- Add an Impactful Legend ---
+% A bold, distinct legend helps the audience instantly identify the lines.
+[hl, h_obj] = legend('\bfPotential Input (Target)', ...
+                      '\bfFilter Output (Controlled)', ... % Bold legend text, clearer names
+                      'FontSize', 14, ...
+                      'Box', 'on', 'EdgeColor', [0.5 0.5 0.5], 'LineWidth', 1); % Optional box for legend emphasis
+
+% (Optional) Further customize specific legend elements if needed (e.g., thicker legend lines)
+% for i = 1:length(h_obj)
+%     if strcmp(h_obj(i).Type, 'line')
+%         h_obj(i).LineWidth = 3; % Make the legend lines even thicker than the plot lines
+%     end
+% end
+
+hold off;
+
+
+
+%% Plot CSV's from signal tap
+
+% Clear workspace and command window
+clear; clc; close all;
+
+% Define the filename
+filename = 'Load_change.csv';
+
+% Setup import options to handle the metadata at the top of the file
+opts = detectImportOptions(filename);
+opts.VariableNamingRule = 'preserve'; % Keeps exact column names
+
+% Read the data
+data = readtable(filename, opts);
+
+% Extract the variables
+% Note: Change 'Time' if your actual time column has a different header name
+time_raw = data.time_unit; 
+q_in = data.q_in;
+freq_in = data.freq_in;
+
+% Convert time from 1/720 seconds to actual seconds
+time_actual = time_raw / 720;
+
+% Create the figure
+figure('Name', 'Load Change Analysis', 'Position', [100, 100, 800, 600]);
+
+% --- Top Subplot: q_in ---
+ax1 = subplot(2, 1, 1); % 2 rows, 1 column, 1st plot
+plot(time_actual, q_in, 'b-', 'LineWidth', 1.5);
+title('Input Q (q_{in})');
+ylabel('q_{in}');
+grid on;
+
+% --- Bottom Subplot: freq_in ---
+ax2 = subplot(2, 1, 2); % 2 rows, 1 column, 2nd plot
+plot(time_actual, freq_in, 'r-', 'LineWidth', 1.5);
+title('Input Frequency (freq_{in})');
+xlabel('Time (seconds)');
+ylabel('freq_{in}');
+grid on;
+
+% Link the x-axes so zooming on one zooms on the other identically
+linkaxes([ax1, ax2], 'x');
+
+
+
+%% 1. Load Data
+filename = 'Load_change.csv';
+
+% Skip the first 23 lines of metadata
+opts = detectImportOptions(filename, 'NumHeaderLines', 23);
+opts.VariableNamingRule = 'preserve'; 
+raw_data = readtable(filename, opts);
+
+% 2. Clean Headers and Import into Variables
+% This converts "ipll:inst|q_in[17..0]" -> "ipll_inst_q_in_17__0_"
+rawNames = raw_data.Properties.VariableNames;
+validNames = matlab.lang.makeValidName(rawNames);
+
+% Update the table with valid names
+raw_data.Properties.VariableNames = validNames;
+
+% Find the specific variables for Time, Q, and Freq
+% We search for the "short" name within the "long" cleaned names
+time_var = validNames{1}; 
+q_var    = validNames{contains(validNames, 'q_in')};
+f_var    = validNames{contains(validNames, 'freq_in')};
+
+% Filter out initialization rows (where data is 'X')
+is_valid = ~contains(string(raw_data.(q_var)), 'X');
+data = raw_data(is_valid, :);
+
+% 3. Convert and Scale Data
+% Time: 1 unit = 1/720 seconds
+time_s = data.(time_var) / 720;
+
+% Binary Strings -> Decimal
+% Use 2's complement logic if the signals are signed
+q_raw = bin2dec(string(data.(q_var)));
+q_in  = q_raw; 
+q_in(q_in >= 2^17) = q_in(q_in >= 2^17) - 2^18; % Assumes 18-bit signed
+
+f_raw = bin2dec(string(data.(f_var)));
+freq_in = f_raw;
+freq_in(freq_in >= 2^31) = freq_in(freq_in >= 2^31) - 2^32; % Assumes 32-bit signed
+
+% 4. Plot Variable Names
+figure('Color', 'w', 'Name', 'Signal Analysis');
+
+% Subplot 1: q_in
+ax1 = subplot(2,1,1);
+plot(time_s, q_in, 'LineWidth', 1.5);
+title(['Signal: ', strrep(q_var, '_', ' ')]); % Clean title for display
+ylabel('Amplitude');
+grid on;
+
+% Subplot 2: freq_in
+ax2 = subplot(2,1,2);
+plot(time_s, freq_in, 'r', 'LineWidth', 1.5);
+title(['Signal: ', strrep(f_var, '_', ' ')]);
+xlabel('Time (seconds)');
+ylabel('Frequency Value');
+grid on;
+
+% Link axes for synchronized zooming
+linkaxes([ax1, ax2], 'x');

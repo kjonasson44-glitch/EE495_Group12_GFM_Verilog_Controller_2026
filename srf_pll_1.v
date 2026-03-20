@@ -13,7 +13,7 @@ module srf_pll_1 (
     
     // Center Frequency: 59 Hz at 720 Hz sampling rate 
     // Calculation verified: (32'sd357913941 / 2^32) * 720 Hz ~= 60.0 Hz
-    localparam signed [31:0] CENTER_FREQ = 32'sd357913941;
+    localparam signed [31:0] CENTER_FREQ = 32'sd357913942;
 
     // PI Controller Gains
     // Note: Gains depend on input magnitude (Vm) and sampling time (Ts)

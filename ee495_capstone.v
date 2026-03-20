@@ -80,7 +80,9 @@ end
 // Interconnect wires for the DSP chain
 (* noprune *) wire signed [17:0] d_out; //1s15 - from dqz to ipll and spvm
 (* noprune *) wire signed [17:0] q_out; //1s15 - from dqz to ipll and spvm
-(* noprune *) wire signed [31:0] freq_out; // freq out as a 0s32 number (cycles/sample) - 60/720 * 2^32 - as an example
+(* noprune *) wire signed [31:0] freq_out_ipll; // freq out as a 0s32 number (cycles/sample) - 60/720 * 2^32 - as an example
+(* noprune *) wire signed [31:0] freq_out_srf; // freq out from type 1 system (grid following)
+(* noprune *) wire signed [31:0] freq_out; // freq out from type 1 system (grid following)
 (* noprune *) wire signed [17:0] nco_sine; // From dqz
 (* noprune *) wire signed [17:0] nco_cosine; // From dqz
 
@@ -112,12 +114,12 @@ assign GPIO[22] = CONVST;
 (* noprune *) assign GPIO[27] = 0;
 (* noprune *) assign GPIO[26] = 0;
 
-
 /************** MODULE INSTANTIATIONS
 ********************************/
 
 // adc_reader - reads from adc into our registers - uses GPIO
-adc_reader inst_adc_reader (
+
+adc_reader_new inst_adc_reader (
   .clk(clk),
   .reset(reset),
   .BUSY(BUSY),
@@ -137,6 +139,30 @@ adc_reader inst_adc_reader (
   .loading(loading)
 );
 
+
+
+// For old adc (GFM 1.0)
+/*
+adc_reader inst_adc_reader (
+  .clk(clk),
+  .reset(reset),
+  .BUSY(BUSY),
+  .FRSTDATA(FRSTDATA),
+  .DATA_IN(DATA_IN),
+  .RD(RD),
+  .CONVST(CONVST),
+  .reset_pin(reset_pin),
+  .VA(VA),
+  .VB(VB),
+  .VC(VC),
+  .IA(IA),
+  .IB(IB),
+  .IC(IC),
+  .VDC(VDC),
+  .GARBAGE(GARBAGE),
+  .loading(loading)
+);
+*/
 // dqz - converts three phase signals into the quadrature value we use - also has the NCO_dqz inside 
 dqz #(
     .WORD_SIZE(18),
@@ -162,27 +188,41 @@ ipll #(
 	 .clk_en(clk_en),
     .reset(reset),
     .q_in(q_out),     // Feeding the Q-axis error into the PLL
-    .freq_out(freq_out)
+    .freq_out(freq_out_ipll)
 );
 
 
-/*
-srf_pll_1 #(
-    .WORD_SIZE(18),
-    .ACC_WIDTH(32)
-) inst_srf_pll (
+
+srf_pll_1 inst_srf_pll (
     .clk(clk),
 	 .clk_en(clk_en),
     .reset(reset),
     .q_in(q_out),     // Feeding the Q-axis error into the PLL
-    .freq_out(freq_out)
+    .freq_out(freq_out_srf)
 );
-*/
 
+// ========================================================================
+// Frequency Output Multiplexer
+// ========================================================================
+
+// Constants for 60 Hz and the 0.05 Hz tolerance
+localparam signed [31:0] FREQ_60HZ = 32'sd357913941;
+localparam signed [31:0] FREQ_TOL  = 32'sd298262;
+
+// Evaluate if the IPLL frequency is within +/- 0.05 Hz of 60 Hz
+wire ipll_within_range = (freq_out_ipll >= (FREQ_60HZ - FREQ_TOL)) && 
+                         (freq_out_ipll <= (FREQ_60HZ + FREQ_TOL));
+
+// Mux logic for freq_out based on switches 
+// If SW 0 is high - we use freq_out_srf - which is GRID FOLLOWING
+(* noprune *) assign freq_out = (SW[0]) ? freq_out_srf :                                       // SW 0 High: Force SRF
+                  (SW[1]) ? (ipll_within_range ? freq_out_srf : freq_out_ipll) : // SW 0 Low, SW 1 High: Combination Mode
+                            freq_out_ipll;
+									 
 (* noprune *) wire signed [63:0] freq_out_fast_big = freq_out * FAST_CONV; // freq out - which is in cycles per sample at 720 samples/sec, into 25M samples/sec
 
 (* noprune *) wire signed [31:0] freq_out_fast = freq_out_fast_big[63:32]; // Top 32 bits after multiplication
-(* noprune *) wire signed [31:0] carrier_freq = freq_out_fast * CARRIER_CONV; // freq out fast multiplied by our modulation constant (75 I think)
+(* noprune *) wire signed [31:0] carrier_freq = freq_out_fast * CARRIER_CONV; // freq out fast multiplied by our modulation constant (75)
 
 /*
 spwm - pulse width modulation - controls switches of inverter with GPIO

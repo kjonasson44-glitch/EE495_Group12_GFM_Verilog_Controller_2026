@@ -19,9 +19,9 @@ localparam CENTRE_FREQ = 32'sd357913941;
 // 60.25 Hz - 32'sd359405250;
 
 // Current Case:
-// kp = 40, ki = 1000, Jeq = 0.1, Deq = 1.2
+// kp = 40, ki = 1000, Jeq = 0.05, Deq = 1.2 - 0.9
 // Cannot set D less than 0.125 - but you will never want to do that anyway
-
+// Tests have to be done with the scale of q in. It needs to be factored in to all of this. 
 // Numerator coefficients (feedforward) 
 localparam signed [17:0] B0 =  18'sd14359; // -2s20
 localparam signed [17:0] B1 = 18'sd490; // -2s20
@@ -114,7 +114,7 @@ always @(posedge clk or posedge reset) begin
 	if (reset) begin
 		freq_out <= CENTRE_FREQ;
 	end else begin
-		freq_out <= CENTRE_FREQ + $signed(freq_err); // Subtracting this also didn't work - go figure
+		freq_out <= CENTRE_FREQ + $signed(freq_err);
 	end
 end
 
