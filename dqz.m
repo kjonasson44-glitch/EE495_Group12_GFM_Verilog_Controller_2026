@@ -688,3 +688,60 @@ for i = 1:length(signals)
     fclose(fid);
 end
 fprintf('Generated seamlessly looping 60Hz hex files.\n');
+
+
+
+
+%% Testing Voltage control
+
+N = 2048;               % Larger buffer to allow time for ramping
+bits = 16;              % 16-bit signed
+max_val = 2^(bits-1)-1; % 32767
+
+% Physical Parameters
+fs = 720;               % Sampling rate (Hz)
+f_grid = 60;            % Grid frequency (Hz)
+
+% Time/Phase calculation
+n = (0:N-1)';           
+theta_fixed = 2*pi * (f_grid / fs) * n; 
+
+% Create the Amplitude Envelope
+% Buffer is 2048 samples. 
+% 1-512: Hold 16384
+% 513-1024: Ramp 16384 -> 24576
+% 1025-1536: Ramp 24576 -> 16384
+% 1537-2048: Hold 16384
+envelope = zeros(N, 1);
+envelope(1:512) = 16384;
+envelope(513:1024) = linspace(16384, 24576, 512);
+compile_down = linspace(24576, 16384, 512);
+envelope(1025:1536) = compile_down;
+envelope(1537:end) = 16384;
+
+% 1. Three-Phase Sinusoids with Modulated Amplitude
+sig_A = envelope .* sin(theta_fixed);
+sig_B = envelope .* sin(theta_fixed - 2*pi/3);
+sig_C = envelope .* sin(theta_fixed - 4*pi/3);
+
+% 2. Export to Hex
+signals = {sig_A, sig_B, sig_C};
+filenames = {'phase_a_env.hex', 'phase_b_env.hex', 'phase_c_env.hex'};
+
+for i = 1:length(signals)
+    data = round(signals{i});
+    
+    % Clamp logic to prevent overflow wrapping
+    data = max(min(data, max_val), -2^(bits-1));
+    
+    % Convert to 16-bit hex (4 digits), using 2s complement for negatives
+    hex_vals = dec2hex(mod(data, 2^bits), 4);
+    
+    fid = fopen(filenames{i}, 'w');
+    for row = 1:N
+        fprintf(fid, '%s\n', hex_vals(row, :));
+    end
+    fclose(fid);
+end
+
+fprintf('Files generated. 60Hz sampled at 720Hz with amplitude envelope.\n');

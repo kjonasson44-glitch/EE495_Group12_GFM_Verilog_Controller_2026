@@ -107,6 +107,7 @@ assign GPIO[22] = CONVST;
 (* noprune *) assign GPIO[25] = w_low;
 */ 
 
+// GPIO[23] is now sync out - from the DB9 connector - but we don't ever need this signal so we ignore it
 (* noprune *) assign GPIO[29] = u_high;
 (* noprune *) assign GPIO[19] = u_low;
 

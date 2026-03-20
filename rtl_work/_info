@@ -399,6 +399,19 @@ R0
 R0
 R0
 R0
+R0
+R0
+R0
+R0
+R0
+R0
+R0
+R0
+R0
+R0
+R0
+R0
+R0
 !s11f MIXED_VERSIONS
 13
 !s112 1.1
@@ -419,11 +432,11 @@ n@_opt
 Z5 OL;O;2021.2;73
 R1
 T_opt1
-!s110 1773160303
-V6Wl5AC2RXn5DfJK66[k8P2
-04 13 4 work dqz_to_pwm_tb fast 0
-=1-b07b2523f7f5-69b0476e-ef6d3-713d
-!s124 OEM10U14 
+!s110 1773994755
+VD@P_2LklNRXV7jhgj<<oJ1
+04 12 4 work volt_cont_tb fast 0
+=1-b07b25243006-69bd0302-c1ff8-2bc8c8
+!s124 OEM10U12 
 R3
 R4
 n@_opt1
@@ -441,27 +454,51 @@ R5
 R1
 vadc_reader
 Z6 DXx6 sv_std 3 std 0 22 9oUSJO;AeEaW`l:M@^WG92
-Z7 !s110 1773160302
+Z7 !s110 1773994754
 !i10b 1
-!s100 0Xc=<R_hbKU:7=jm<?W<^2
-I0ePF@Yb8AUWb^;82OF?FR0
+!s100 ^kfiQ[khNQ6_hMb@Gl^dl0
+I3Hc<ki@]aZffag?lR9g3R2
 S1
-Z8 d/home/.engr-ece/lag051/ee495_capstone_Feb_8/ee495_capstone
-w1772121310
+Z8 d/home/.engr-ece/lag051/ee495_capstone
+w1773438985
 8./adc_reader.v
 F./adc_reader.v
 !i122 0
-L0 1 246
+L0 1 258
 Z9 VDg1SIo80bB@j0V0VzS_@n1
 Z10 OL;L;2021.2;73
 r1
 !s85 0
 31
-Z11 !s108 1773160302.000000
-Z12 !s107 ./tb_inverter_top.v|./srf_pll_1.v|./spwm.v|./sine_rom.v|./nco_spvm.v|./nco_dqz.v|./ipll.v|./inverter_top.v|./inverter_interface.v|./ee495_capstone.v|./ee465_capstone_pwm_test.v|./dqz_to_pwm_tb.v|./dqz_to_ipll_tb.v|./dqz_tb.v|./dqz.v|./carrier_nco.v|./adc_reader_tb.v|./adc_reader.v|
-Z13 !s90 -reportprogress|300|-sv|-work|work|./adc_reader.v|./adc_reader_tb.v|./carrier_nco.v|./dqz.v|./dqz_tb.v|./dqz_to_ipll_tb.v|./dqz_to_pwm_tb.v|./ee465_capstone_pwm_test.v|./ee495_capstone.v|./inverter_interface.v|./inverter_top.v|./ipll.v|./nco_dqz.v|./nco_spvm.v|./sine_rom.v|./spwm.v|./srf_pll_1.v|./tb_inverter_top.v|
+Z11 !s108 1773994753.000000
+Z12 !s107 ./volt_control_filter.v|./volt_cont_tb.v|./tb_inverter_top.v|./srf_pll_1.v|./spwm_new.v|./spwm.v|./sine_rom.v|./nco_spvm.v|./nco_dqz.v|./ipll.v|./inverter_top_new.v|./inverter_top.v|./inverter_interface.v|./ee495_capstone.v|./ee465_capstone_pwm_test.v|./dqz_to_pwm_tb.v|./dqz_to_ipll_tb.v|./dqz_tb.v|./dqz.v|./carrier_nco.v|./amplitude_finder.v|./adc_reader_tb.v|./adc_reader_new.v|./adc_reader.v|
+Z13 !s90 -reportprogress|300|-sv|-work|work|./adc_reader.v|./adc_reader_new.v|./adc_reader_tb.v|./amplitude_finder.v|./carrier_nco.v|./dqz.v|./dqz_tb.v|./dqz_to_ipll_tb.v|./dqz_to_pwm_tb.v|./ee465_capstone_pwm_test.v|./ee495_capstone.v|./inverter_interface.v|./inverter_top.v|./inverter_top_new.v|./ipll.v|./nco_dqz.v|./nco_spvm.v|./sine_rom.v|./spwm.v|./spwm_new.v|./srf_pll_1.v|./tb_inverter_top.v|./volt_cont_tb.v|./volt_control_filter.v|
 !i113 0
 Z14 o-sv -work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R4
+vadc_reader_new
+R6
+R7
+!i10b 1
+!s100 kYJkEO0nCAZDSWbOd6TIL1
+In[n:PALHEP4Aj4Odb[?0]3
+S1
+R8
+w1773973325
+8./adc_reader_new.v
+F./adc_reader_new.v
+!i122 0
+L0 1 213
+R9
+R10
+r1
+!s85 0
+31
+R11
+R12
+R13
+!i113 0
+R14
 R4
 vadc_reader_tb
 R6
@@ -475,7 +512,31 @@ w1768936491
 8./adc_reader_tb.v
 F./adc_reader_tb.v
 !i122 0
-Z15 L0 1 132
+L0 1 132
+R9
+R10
+r1
+!s85 0
+31
+R11
+R12
+R13
+!i113 0
+R14
+R4
+vamplitude_finder
+R6
+R7
+!i10b 1
+!s100 Fkhl;a^[]a>=zD=YGW=@Q2
+IS5XkzIWRTdVUlT`=o6IC[0
+S1
+R8
+w1773991096
+8./amplitude_finder.v
+F./amplitude_finder.v
+!i122 0
+Z15 L0 1 40
 R9
 R10
 r1
@@ -491,15 +552,15 @@ vcarrier_nco
 R6
 R7
 !i10b 1
-!s100 lKdaBz:mRkOo?X:`12W_e3
-I>caJZcm4D8J];jV]=dCdn0
+!s100 h1>zo]beQN^k:Ra895O@<2
+I@[NX@oQ7SBozDV>c=_I?B1
 S1
 R8
-w1773102370
+w1773435799
 8./carrier_nco.v
 F./carrier_nco.v
 !i122 0
-L0 1 57
+R15
 R9
 R10
 r1
@@ -515,15 +576,15 @@ vdqz
 R6
 R7
 !i10b 1
-!s100 ;A3P4U>>=mgmM85^K^DV?0
-ICf4RZ0OFcgmYH`cFW=ZFD3
+!s100 ^E>?VZ`cohR_VfZWFoT4?3
+IcB:YeK?J3AEo6=`WN7DQc1
 S1
 R8
-w1773109836
+w1773428627
 8./dqz.v
 F./dqz.v
 !i122 0
-L0 35 72
+L0 33 72
 R9
 R10
 r1
@@ -615,7 +676,7 @@ R7
 I@EW>AFjL3VFf0NhI2<[Ed3
 S1
 R8
-w1773101588
+w1773355521
 8./inverter_interface.v
 F./inverter_interface.v
 !i122 0
@@ -635,11 +696,11 @@ vinverter_top
 R6
 R7
 !i10b 1
-!s100 ]Rk3c_T@CQEoBd=WBAgFJ3
-IVE`U[0jWLg^M^Kh4_4<i32
+!s100 =1HAz4hB]X`g3]c7n[M971
+I13CleBMNkAm5E4]LKm]Dd3
 S1
 R8
-w1773108582
+w1773434265
 8./inverter_top.v
 F./inverter_top.v
 !i122 0
@@ -655,19 +716,43 @@ R13
 !i113 0
 R14
 R4
+vinverter_top_new
+R6
+R7
+!i10b 1
+!s100 z]_^G^JKn:k_GX<L?84[<3
+IzHRXS18V]U7_:e@ONJdBY0
+S1
+R8
+w1773994411
+8./inverter_top_new.v
+F./inverter_top_new.v
+!i122 0
+L0 1 74
+R9
+R10
+r1
+!s85 0
+31
+R11
+R12
+R13
+!i113 0
+R14
+R4
 vipll
 R6
 R7
 !i10b 1
-!s100 HU68:A_`C><WUojf8U:2m3
-IFgZLZmGBF]NdR^b0N>RAO1
+!s100 2dMe4kC3E4B2[O?_2B9^L3
+IDXSTQ_WH3CgJ:VHoGzY7R1
 S1
 R8
-w1773105322
+w1773972335
 8./ipll.v
 F./ipll.v
 !i122 0
-R15
+L0 1 121
 R9
 R10
 r1
@@ -707,11 +792,11 @@ vnco_spvm
 R6
 R7
 !i10b 1
-!s100 i8JlQ5OARbY8ODFjdzLaR1
-I@i?2kOXH:j>g96SgeMfVM1
+!s100 D1WaXBYPHcYFoEU620o253
+IISmlzZiSz0VR7CYF]o7f<3
 S1
 R8
-w1773112362
+w1773435809
 8./nco_spvm.v
 F./nco_spvm.v
 !i122 0
@@ -755,15 +840,39 @@ vspwm
 R6
 R7
 !i10b 1
-!s100 5TF^0PJAVYo7kAAiWnVnN0
-I6ED0ePH:_gYDCP<T=fZ^H3
+!s100 L1=ZI=jR<Oi?kn;BRHdD^1
+IZkRf:6UL2ZjA]?@>4:Gz@0
 S1
 R8
-w1773112506
+w1773435680
 8./spwm.v
 F./spwm.v
 !i122 0
-L0 1 89
+L0 1 64
+R9
+R10
+r1
+!s85 0
+31
+R11
+R12
+R13
+!i113 0
+R14
+R4
+vspwm_new
+R6
+R7
+!i10b 1
+!s100 0h9g1]L?7?ibB`=U]d9Al0
+I9>JmJGd`4^5_WhKQ=ZfXk1
+S1
+R8
+w1773994283
+8./spwm_new.v
+F./spwm_new.v
+!i122 0
+Z16 L0 1 89
 R9
 R10
 r1
@@ -779,15 +888,15 @@ vsrf_pll_1
 R6
 R7
 !i10b 1
-!s100 c>5L52Wc0JdeMF6LQIF[_0
-IM36h72e_ZQMf5gQ?U]SGk1
+!s100 ^Tgh4TSQT:BmiQa6?BgVP3
+I8`m36PW]@8:M0X3RM0`Gd2
 S1
 R8
-w1773160273
+w1773969234
 8./srf_pll_1.v
 F./srf_pll_1.v
 !i122 0
-L0 1 91
+L0 1 80
 R9
 R10
 r1
@@ -812,6 +921,52 @@ w1773102345
 F./tb_inverter_top.v
 !i122 0
 L0 3 104
+R9
+R10
+r1
+!s85 0
+31
+R11
+R12
+R13
+!i113 0
+R14
+R4
+vvolt_cont_tb
+R7
+!i10b 1
+!s100 USL[HeH6QR?:@b_oK0=KM2
+IYo:o_ANMoHz7>8i?fd6703
+R8
+w1773994550
+8./volt_cont_tb.v
+F./volt_cont_tb.v
+!i122 1
+L0 1 78
+R9
+R10
+r1
+!s85 0
+31
+!s108 1773994754.000000
+!s107 ./volt_cont_tb.v|
+!s90 -reportprogress|300|-work|work|./volt_cont_tb.v|
+!i113 0
+o-work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R4
+vvolt_control_filt
+R6
+R7
+!i10b 1
+!s100 08Y7ADn2TdcT[Z@3[C`JT0
+IfT;h9U4ePFk:`7a6PaiZU3
+S1
+R8
+w1773990089
+8./volt_control_filter.v
+F./volt_control_filter.v
+!i122 0
+R16
 R9
 R10
 r1

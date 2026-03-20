@@ -11,10 +11,10 @@
 #               7.  Use the waveform window to debug your design as desired.
 
 # Variables to configure
-set SIMULATION_LENGTH 410ms
+set SIMULATION_LENGTH 2840ms
 set SOURCE_DIR "./"
 set TB_DIR "./"
-set TB_MODULE "dqz_to_pwm_tb"
+set TB_MODULE "volt_cont_tb"
 
 # End of variables to configure
 
