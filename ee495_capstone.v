@@ -12,12 +12,16 @@ localparam CLK_FREQ_HZ     = 25_000_000;  // 25 MHz System Clock
 localparam SAMPLE_RATE_HZ  = 720;         // Target Data Rate
 localparam CLKS_PER_SAMPLE = CLK_FREQ_HZ / SAMPLE_RATE_HZ; // ~34,722 clocks
 
+localparam SAMPLING_CLK = 10; // ~34,722 clocks
+
 localparam FAST_CONV = 123695; // 0s32 of 720/25M
 localparam CARRIER_CONV = 75; // 75 as in matlab
 
 integer timer_cnt;
+integer timer_cnt2;
 reg clk = 0;
 reg clk_en = 0;
+reg sampling_clk = 0;
 
 // System Clock (25 Mhz)
 always @ (posedge CLOCK_50) begin
@@ -37,6 +41,22 @@ always @(posedge clk or posedge reset) begin
       end else begin
             timer_cnt <= timer_cnt + 1; // Keep counting
             clk_en <= 0;
+      end
+    end
+end
+
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+      timer_cnt2 <= 0;
+      sampling_clk <= 1'd0;
+    end else begin
+      // Check if enough clock cycles have passed to jump to the next sample
+      if (timer_cnt2 >= SAMPLING_CLK - 1) begin
+            timer_cnt2 <= 0;               // Reset timer
+            sampling_clk <= ~sampling_clk;
+      end else begin
+            timer_cnt2 <= timer_cnt2 + 1; // Keep counting
+            sampling_clk <= sampling_clk;
       end
     end
 end
@@ -87,13 +107,15 @@ end
 (* noprune *) wire signed [17:0] nco_cosine; // From dqz
 
 // Inputs from external hardware
-(* noprune *) wire BUSY     = GPIO[20];
+(* noprune *) wire BUSY     = GPIO[20];                                                                         
 (* noprune *) wire FRSTDATA = GPIO[16];
 (* noprune *) wire signed [15:0] DATA_IN = GPIO[15:0];
 
 // Outputs to external hardware
 assign GPIO[18] = RD;
+//assign GPIO[28] = RD;
 assign GPIO[22] = CONVST;
+//assign GPIO[26] = CONVST;
 (* noprune *) assign GPIO[35] = reset_pin;
 //assign GPIO[35] = ~KEY[0]; //reset;
 
@@ -108,6 +130,7 @@ assign GPIO[22] = CONVST;
 */ 
 
 // GPIO[23] is now sync out - from the DB9 connector - but we don't ever need this signal so we ignore it
+/*
 (* noprune *) assign GPIO[29] = u_high;
 (* noprune *) assign GPIO[19] = u_low;
 
@@ -116,17 +139,29 @@ assign GPIO[22] = CONVST;
 
 (* noprune *) assign GPIO[21] = w_high;
 (* noprune *) assign GPIO[27] = w_low;
+*/
+
+(* noprune *) assign GPIO[23] = u_high;
+(* noprune *) assign GPIO[19] = u_low;
+
+(* noprune *) assign GPIO[17] = v_high;
+(* noprune *) assign GPIO[21] = v_low;
+
+(* noprune *) assign GPIO[29] = w_high;
+(* noprune *) assign GPIO[25] = w_low;
 
 
-(* noprune *) assign GPIO[25] = 0;
+(* noprune *) assign GPIO[24] = 0;
 (* noprune *) assign GPIO[34] = 0;
 (* noprune *) assign GPIO[33] = 0;
 (* noprune *) assign GPIO[32] = 0;
 (* noprune *) assign GPIO[31] = 0;
 (* noprune *) assign GPIO[30] = 0;
-(* noprune *) assign GPIO[29] = 0;
+
 (* noprune *) assign GPIO[28] = 0;
+
 (* noprune *) assign GPIO[27] = 0;
+
 (* noprune *) assign GPIO[26] = 0;
 
 /************** MODULE INSTANTIATIONS
@@ -134,7 +169,7 @@ assign GPIO[22] = CONVST;
 
 // adc_reader - reads from adc into our registers - uses GPIO
 
-adc_reader_new inst_adc_reader (
+adc_reader inst_adc_reader (
   .clk(clk),
   .reset(reset),
   .BUSY(BUSY),
@@ -202,7 +237,7 @@ ipll #(
     .clk(clk),
 	 .clk_en(clk_en),
     .reset(reset),
-    .q_in(q_out),     // Feeding the Q-axis error into the PLL
+    .q_in(q_in_ipll),     // Feeding the Q-axis error into the PLL
     .freq_out(freq_out_ipll)
 );
 
@@ -212,12 +247,12 @@ srf_pll_1 inst_srf_pll (
     .clk(clk),
 	 .clk_en(clk_en),
     .reset(reset),
-    .q_in(q_out),     // Feeding the Q-axis error into the PLL
+    .q_in(q_in_srf),     // Feeding the Q-axis error into the PLL
     .freq_out(freq_out_srf)
 );
 
 // ========================================================================
-// Frequency Output Multiplexer
+// Frequency Output & Input Routing Multiplexers
 // ========================================================================
 
 // Constants for 60 Hz and the 0.05 Hz tolerance
@@ -228,11 +263,17 @@ localparam signed [31:0] FREQ_TOL  = 32'sd298262;
 wire ipll_within_range = (freq_out_ipll >= (FREQ_60HZ - FREQ_TOL)) && 
                          (freq_out_ipll <= (FREQ_60HZ + FREQ_TOL));
 
+// Determine if SRF is the active controller based on your existing switch logic
+wire srf_active = (SW[0]) ? 1'b1 : 
+                  (SW[1]) ? ipll_within_range : 
+                            1'b0;
+
+// Route q_out to the active PLL (tie the inactive one to 0)
+wire signed [17:0] q_in_srf  = srf_active ? q_out : 18'sd0;
+wire signed [17:0] q_in_ipll = srf_active ? 18'sd0 : q_out;
+
 // Mux logic for freq_out based on switches 
-// If SW 0 is high - we use freq_out_srf - which is GRID FOLLOWING
-(* noprune *) assign freq_out = (SW[0]) ? freq_out_srf :                                       // SW 0 High: Force SRF
-                  (SW[1]) ? (ipll_within_range ? freq_out_srf : freq_out_ipll) : // SW 0 Low, SW 1 High: Combination Mode
-                            freq_out_ipll;
+(* noprune *) assign freq_out = srf_active ? freq_out_srf : freq_out_ipll;
 									 
 (* noprune *) wire signed [63:0] freq_out_fast_big = freq_out * FAST_CONV; // freq out - which is in cycles per sample at 720 samples/sec, into 25M samples/sec
 
@@ -251,8 +292,8 @@ inverter_top #(
         .reset(reset),
         .freq_in(freq_out_fast),
         .carrier_fcw(carrier_freq),
-        .d_in(d_out),
-        .q_in(q_out),
+        .d_in(d_out), // This doesn't use q out anyway
+        .q_in(q_out), // This doesn't use d out
         .u_high(u_high),
         .u_low(u_low),
         .v_high(v_high),

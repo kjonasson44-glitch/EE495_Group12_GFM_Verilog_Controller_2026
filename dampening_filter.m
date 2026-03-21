@@ -382,11 +382,11 @@ N_sim = length(t_vec);
 
 % --- Define the Input Grid (Common to all runs) ---
 f_grid_actual = ones(1, N_sim) * 60.0; 
-f_grid_actual(t_vec >= 0.5) = 59.0; % 1 Hz step
+f_grid_actual(t_vec >= 0.5) = 60.0; % 1 Hz step
 theta_grid = cumtrapz(t_vec, 2*pi * f_grid_actual);
-v_a = cos(theta_grid); 
-v_b = cos(theta_grid - 2*pi/3); 
-v_c = cos(theta_grid - 4*pi/3);
+v_a = 2*cos(theta_grid); 
+v_b = 2*cos(theta_grid - 2*pi/3); 
+v_c = 2*cos(theta_grid - 4*pi/3);
 
 % --- Sweep Parameters ---
 % CHANGE THIS to sweep D, Kp, etc.
@@ -407,7 +407,7 @@ for p = 1:length(param_sweep)
     
     % Update the specific variable for this run
     J_fixed = param_sweep(p); 
-    D_sim = 0.9; % Keep others constant
+    D_sim = 0.5; % Keep others constant
     Kp =40; Ki = 1000;
     
     % --- Re-calculate Coefficients for THIS run ---
@@ -504,6 +504,150 @@ subplot(2,1,2);
 plot(t_vec, q_out_history', 'LineWidth', 1.2);
 grid on; ylabel('Q Value (Error)');
 xlabel('Time (s)');
+
+
+%% Multt-Parameter Sweep: Testing J Sens - With D and Q
+clear; clc; close all;
+
+% --- Constant Simulation Parameters ---
+Fs_sim = 720;
+Ts_sim = 1/Fs_sim;
+t_sim_final = 240; % Reduced for faster multi-run plotting
+t_vec = 0:Ts_sim:t_sim_final;
+N_sim = length(t_vec);
+
+% --- Define the Input Grid (Common to all runs) ---
+f_grid_actual = ones(1, N_sim) * 60.0; 
+f_grid_actual(t_vec >= 0.5) = 60.0; % 1 Hz step (currently kept at 60)
+theta_grid = cumtrapz(t_vec, 2*pi * f_grid_actual);
+v_a = cos(theta_grid); 
+v_b = cos(theta_grid - 2*pi/3); 
+v_c = cos(theta_grid - 4*pi/3);
+
+% --- Sweep Parameters ---
+% CHANGE THIS to sweep D, Kp, etc.
+param_sweep = [0.05, 0.1, 0.2]; 
+sweep_label = 'J';
+
+% --- Pre-allocate Storage ---
+f_out_history = zeros(length(param_sweep), N_sim);
+q_out_history = zeros(length(param_sweep), N_sim);
+d_out_history = zeros(length(param_sweep), N_sim); % Added pre-allocation for d
+num_z_all = cell(length(param_sweep),1);
+den_z_all = cell(length(param_sweep),1);
+
+% ========================================================
+% ================= OUTER SWEEP LOOP =====================
+% ========================================================
+for p = 1:length(param_sweep)
+    
+    % Update the specific variable for this run
+    J_fixed = param_sweep(p); 
+    D_sim = 0.25; % Keep others constant
+    Kp = 40; Ki = 1000;
+    
+    % --- Re-calculate Coefficients for THIS run ---
+    num_s = [Kp, Ki];
+    den_s = [J_fixed*Kp, (J_fixed*Ki + (D_sim)*Kp + 1), (D_sim)*Ki];
+    Gz = c2d(tf(num_s, den_s), Ts_sim, 'tustin');
+    [num_z, den_z] = tfdata(Gz, 'v');
+    
+    b0 = num_z(1); b1 = num_z(2); b2 = num_z(3);
+    a1 = den_z(2); a2 = den_z(3);
+    
+    % --- Reset Simulation States ---
+    x_z1 = 0; x_z2 = 0; y_z1 = 0; y_z2 = 0;
+    theta_nco = 0;
+    f_nco_center = 60.0; % Your center freq
+    
+    % Store them
+    num_z_all{p} = num_z;
+    den_z_all{p} = den_z;
+    
+    % Normalize so a0 = 1
+    num_z = num_z / den_z(1);
+    den_z = den_z / den_z(1);
+    num_z_all{p} = num_z;
+    den_z_all{p} = den_z;
+    
+    fprintf('\nJ = %.5f\n D = %.5f\n', J_fixed, D_sim);
+    fprintf('Numerator:   ');
+    disp(num_z);
+    fprintf('Denominator: ');
+    disp(den_z);
+    
+    NB = 20;  % B Coeffs - -2s20
+    NA = 16;  % A Coeffs - 2s16 
+    scaled_num = round(num_z * 2^NB);
+    scaled_den = round(den_z * 2^NA);
+    fprintf('Numerator Verilog (B0, B1, B2):   ');
+    disp(scaled_num);
+    fprintf('Denominator Verilog (A0 - ignore, A1, A2): ');
+    disp(scaled_den);
+    
+    % --- Sample-by-Sample Loop ---
+    for k = 1:N_sim
+        % NCO
+        sine_nco = sin(theta_nco);
+        cos_nco = cos(theta_nco);
+        
+        % DQZ/Park
+        alpha = (2/3)*v_a(k) - (1/3)*(v_b(k) + v_c(k));
+        beta  = (1/sqrt(3))*(v_c(k) - v_b(k));
+        
+        % Calculate q and d
+        q_val = beta * cos_nco + alpha * sine_nco;
+        d_val = alpha * cos_nco - beta * sine_nco; % Added d_val calculation
+        
+        % IPLL Filter
+        x_in = -q_val;
+        y_out = (b0*x_in + b1*x_z1 + b2*x_z2) - (a1*y_z1 + a2*y_z2);
+        
+        % Updates
+        x_z2 = x_z1; x_z1 = x_in;
+        y_z2 = y_z1; y_z1 = y_out;
+        
+        % Store History
+        f_out_history(p, k) = f_nco_center + y_out;
+        q_out_history(p, k) = q_val;
+        d_out_history(p, k) = d_val; % Store d_val history
+        
+        theta_nco = mod(theta_nco + 2*pi*f_out_history(p, k)*Ts_sim, 2*pi);
+    end
+end
+
+% ========================================================
+% ================= PLOTTING ALL RUNS ====================
+% ========================================================
+figure();
+set(gcf, 'Color', 'w');
+
+% Subplot 1: Frequency Tracking
+subplot(3,1,1); % Changed to 3,1,1
+plot(t_vec, f_grid_actual, 'k--', 'LineWidth', 2); hold on;
+plot(t_vec, f_out_history', 'LineWidth', 1.5); 
+grid on; ylabel('Freq (Hz)');
+title(['Full scale PLL Response Sweep: Full scaled Coefficients - Varying ', sweep_label]);
+
+% Dynamic Legend Generation
+leg_entries = cell(1, length(param_sweep) + 1);
+leg_entries{1} = 'Grid Input';
+for i = 1:length(param_sweep)
+    leg_entries{i+1} = sprintf('%s = %.4f', sweep_label, param_sweep(i));
+end
+legend(leg_entries, 'Location', 'best');
+
+% Subplot 2: Phase Error (Q)
+subplot(3,1,2); % Changed to 3,1,2
+plot(t_vec, q_out_history', 'LineWidth', 1.2);
+grid on; ylabel('Q Value (Error)');
+
+% Subplot 3: D Value
+subplot(3,1,3); % Added 3,1,3 for D
+plot(t_vec, d_out_history', 'LineWidth', 1.2);
+grid on; ylabel('D Value');
+xlabel('Time (s)');
+
 
 
 %% Multi-Parameter Sweep: Testing D sensitivity

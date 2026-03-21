@@ -90,6 +90,7 @@ module nco_spvm #(
             // Note: clk_en was commented out in your original, leaving it as you had it
             phase_acc_old <= phase_acc_old + fcw;
         end
+		   // phace_acc_old must be updated to phase_acc from dqz on every clk 
     end
 
     assign phase_acc = phase_acc_old - LEAD_CORRECTION;

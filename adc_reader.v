@@ -69,7 +69,7 @@ module adc_reader (
             samp_timer      <= 0;
             channel_index   <= 0;
             
-            // UPDATED: CONVST idles High [cite: 209]
+            // UPDATED: CONVST idles High
             CONVST          <= 1; 
             RD              <= 1; 
 			   reset_pin       <= 1;
