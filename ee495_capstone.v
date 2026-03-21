@@ -1,4 +1,4 @@
-// Written by Kelvin Jonasson and David Meilke - kjonasson44@gmail.com and davidpetermielke@gmail.com
+// Written by Kelvin Jonasson and David Mielke - kjonasson44@gmail.com and davidpetermielke@gmail.com
 module ee495_capstone (
      input wire CLOCK_50,             // System Clock (50 MHz)
      inout wire [35:0] GPIO,          // GPIO (36 pins)
@@ -43,16 +43,17 @@ end
 
 /****************** RESET STUFF
 ********************************/
-
-(* noprune *) reg reset; // This is a wire in adc_reader and we do nothing with it
 (* noprune *) wire reset_pin;
 
+/*
+(* noprune *) reg reset; // This is a wire in adc_reader and we do nothing with it
 always @ * begin
     if (~KEY[0])
         reset = 1'b1; // Reset on a key push
     else
         reset = 1'b0; // Ensure reset goes low when key is released
 end
+*/
 
 /************** GPIO ASSIGNMENTS & WIRES
 ********************************/
@@ -117,20 +118,33 @@ assign GPIO[22] = CONVST;
 (* noprune *) assign GPIO[21] = w_high;
 (* noprune *) assign GPIO[27] = w_low;
 
-
-(* noprune *) assign GPIO[25] = 0;
 (* noprune *) assign GPIO[34] = 0;
 (* noprune *) assign GPIO[33] = 0;
 (* noprune *) assign GPIO[32] = 0;
 (* noprune *) assign GPIO[31] = 0;
 (* noprune *) assign GPIO[30] = 0;
-(* noprune *) assign GPIO[29] = 0;
 (* noprune *) assign GPIO[28] = 0;
-(* noprune *) assign GPIO[27] = 0;
 (* noprune *) assign GPIO[26] = 0;
 
 /************** MODULE INSTANTIATIONS
 ********************************/
+
+// In-Signal Sources and Probes
+wire [99:0] issp_source_bus;
+issp_control issp_control_inst (
+    .source_clk (clk),
+    //.probe_clk  (clk),
+    .source     (issp_source_bus),
+    .probe      ()
+);
+
+wire mode = issp_source_bus[91];
+wire reset = issp_source_bus[90];
+wire signed [17:0] a2_issp = $signed(issp_source_bus[89:72]);
+wire signed [17:0] a1_issp = $signed(issp_source_bus[71:54]);
+wire signed [17:0] b2_issp = $signed(issp_source_bus[53:36]);
+wire signed [17:0] b1_issp = $signed(issp_source_bus[35:18]);
+wire signed [17:0] b0_issp = $signed(issp_source_bus[17:0]);
 
 // adc_reader - reads from adc into our registers - uses GPIO
 
@@ -200,8 +214,13 @@ ipll #(
     .ACC_WIDTH(32)
 ) inst_ipll (
     .clk(clk),
-	 .clk_en(clk_en),
+	.clk_en(clk_en),
     .reset(reset),
+    .B0(b0_issp),
+    .B1(b1_issp),
+    .B2(b2_issp),
+    .A1(a1_issp),
+    .A2(a2_issp),
     .q_in(q_out),     // Feeding the Q-axis error into the PLL
     .freq_out(freq_out_ipll)
 );

@@ -5,6 +5,11 @@ module ipll #(
 	input  wire clk,
 	input  wire clk_en,
 	input  wire reset,
+	input  wire signed [17:0] B0,
+	input  wire signed [17:0] B1,
+	input  wire signed [17:0] B2,
+	input  wire signed [17:0] A1,
+	input  wire signed [17:0] A2,
 	input  wire signed [WORD_SIZE-1:0] q_in,
 	output reg  signed [ACC_WIDTH-1:0] freq_out
 );
@@ -22,16 +27,15 @@ localparam CENTRE_FREQ = 32'sd357913941;
 // kp = 40, ki = 1000, Jeq = 0.05, Deq = 1.2 - 0.9
 // Cannot set D less than 0.125 - but you will never want to do that anyway
 // Tests have to be done with the scale of q in. It needs to be factored in to all of this. 
+/*
 // Numerator coefficients (feedforward) 
 localparam signed [17:0] B0 =  18'sd14359; // -2s20
 localparam signed [17:0] B1 = 18'sd490; // -2s20
 localparam signed [17:0] B2 =  -18'sd13869; // -2s20
-
 // Denominator coefficients (feedback) 
 localparam signed [17:0] A1 = -18'sd126997; //2s16
-
 localparam signed [17:0] A2 = 18'sd61522; //2s16
-
+*/
 localparam signed [10:0] RADSEC_TO_CYCPERSAM = 11'sd286; // -4s15 - 2*pi*1/720
 
 // State variables - delay elements
