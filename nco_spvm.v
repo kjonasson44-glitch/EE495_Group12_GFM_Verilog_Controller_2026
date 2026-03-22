@@ -87,10 +87,11 @@ module nco_spvm #(
     // ----- Phase Accumulators ----- //
     always @(posedge clk or posedge reset) begin
         if (reset) begin
-            phase_acc_old <= phase_acc_dqz;
+            phase_acc_old <= 0;
+			
         end else if (clk_en) begin
-				phase_acc_old <= phase_acc_dqz + freq_in_dqz;
-			end
+				phase_acc_old <= phase_acc_dqz;
+			end 
 		  else begin   
             // Note: clk_en was commented out in your original, leaving it as you had it
             phase_acc_old <= phase_acc_old + fcw;
@@ -98,7 +99,7 @@ module nco_spvm #(
 		   // phace_acc_old must be updated to phase_acc from dqz on every clk 
     end
 
-    assign phase_acc = phase_acc_old; // - LEAD_CORRECTION
+    assign phase_acc = phase_acc_old  - LEAD_CORRECTION; // - LEAD_CORRECTION
     assign phase_cos = phase_acc - COS_OFFSET; 
     assign phase_b   = phase_acc - PHASE_B_OFFSET; // Phase B Shift
     assign phase_c   = phase_acc - PHASE_C_OFFSET; // Phase C Shift

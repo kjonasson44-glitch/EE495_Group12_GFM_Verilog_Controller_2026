@@ -16,12 +16,15 @@ module ipll #(
 
 // ----- System Coefficients ----- //
 // CURRENT HZ (please change when you change this): 60 Hz (for a 2^32 accumulator)
-localparam CENTRE_FREQ = 32'sd357913941;
+localparam CENTRE_FREQ = 32'sd361493081;
+// 0.5 Hz - 32'sd2982617
 // 60 Hz - 32'sd357913941;
 // 59 Hz - 32'sd351948709;
 // 61 Hz - 32'sd363879174;
 // 59.75 Hz - 32'sd356422634;
 // 60.25 Hz - 32'sd359405250;
+// 60.5 Hz - 32'sd360896558;
+// 60.6 Hz - 32'sd361493081;
 
 // Current Case:
 // kp = 40, ki = 1000, Jeq = 0.05, Deq = 1.2 - 0.9
