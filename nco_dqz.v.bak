@@ -35,8 +35,7 @@ module nco_dqz #(
     input  wire reset,
     input  wire signed [ACC_WIDTH-1:0] fcw, 
     output wire signed [WORD_SIZE-1:0] sine,   // Changed to wire
-    output wire signed [WORD_SIZE-1:0] cosine,  // Changed to wire
-	 output reg signed [ACC_WIDTH-1:0] phase_acc_dqz
+    output wire signed [WORD_SIZE-1:0] cosine  // Changed to wire
 );
 
 localparam SIGN_BIT   = ACC_WIDTH - 1; // Bit 31
@@ -57,17 +56,17 @@ reg cos_sign_pipe;
 
 // ----- Phase Accumulators ----- //
 always @(posedge clk) begin
-    if (reset) phase_acc_dqz <= 0;
+    if (reset) phase_acc <= 0;
     else if (clk_en) begin   
-        phase_acc_dqz <= phase_acc_dqz + fcw;
+        phase_acc <= phase_acc + fcw;
     end
 end
 
-assign phase_cos = phase_acc_dqz - COS_OFFSET; 
+assign phase_cos = phase_acc - COS_OFFSET; 
 
 // ----- Combinational Address Generation ----- //
 // Eliminated 1 clock cycle of delay here
-wire [ADDR_SIZE-1:0] addr_sin = phase_acc_dqz[MIRROR_BIT] ? ~phase_acc_dqz[ADDR_START:ADDR_START-ADDR_SIZE+1] : phase_acc_dqz[ADDR_START:ADDR_START-ADDR_SIZE+1];
+wire [ADDR_SIZE-1:0] addr_sin = phase_acc[MIRROR_BIT] ? ~phase_acc[ADDR_START:ADDR_START-ADDR_SIZE+1] : phase_acc[ADDR_START:ADDR_START-ADDR_SIZE+1];
 wire [ADDR_SIZE-1:0] addr_cos = phase_cos[MIRROR_BIT] ? ~phase_cos[ADDR_START:ADDR_START-ADDR_SIZE+1] : phase_cos[ADDR_START:ADDR_START-ADDR_SIZE+1];
 
 // ----- Sign Pipelining ----- //
@@ -77,7 +76,7 @@ always @* begin
         sin_sign_pipe <= 0;
         cos_sign_pipe <= 0;
     end else begin
-        sin_sign_pipe <= phase_acc_dqz[SIGN_BIT];
+        sin_sign_pipe <= phase_acc[SIGN_BIT];
         cos_sign_pipe <= phase_cos[SIGN_BIT];
     end
 end

@@ -5,7 +5,7 @@ module ee495_capstone (
      input wire [17:0] SW,
      input wire [3:0] KEY
 );
-
+localparam ACC_WIDTH = 32;
 /******************************* CLOCKS
 ********************************/
 localparam CLK_FREQ_HZ     = 25_000_000;  // 25 MHz System Clock
@@ -232,6 +232,9 @@ adc_reader inst_adc_reader (
   .loading(loading)
 );
 */
+
+
+wire [ACC_WIDTH-1:0] phase_acc_dqz;
 // dqz - converts three phase signals into the quadrature value we use - also has the NCO_dqz inside 
 dqz #(
     .WORD_SIZE(18),
@@ -245,7 +248,8 @@ dqz #(
     .c_in(VC),
     .freq_in(freq_out), // Taking the frequency/phase output from the IPLL
     .d_out(d_out),
-    .q_out(q_out)
+    .q_out(q_out),
+	 .phase_acc_dqz(phase_acc_dqz)
 );
 
 // ipll - inertial phase lock loop - takes quadrature value and outputs corresponding frequency
@@ -323,7 +327,8 @@ inverter_top #(
         .v_high(v_high),
         .v_low(v_low),
         .w_high(w_high),
-        .w_low(w_low)
+        .w_low(w_low),
+		  .phase_acc_dqz(phase_acc_dqz)
     );
 
 

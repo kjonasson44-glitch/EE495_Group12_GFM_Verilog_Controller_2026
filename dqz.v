@@ -43,7 +43,8 @@ module dqz #(
 	input  wire signed [WORD_SIZE-3:0] c_in,
 	input  wire signed [ACC_WIDTH-1:0] freq_in,
 	output reg signed [WORD_SIZE-1:0] d_out, 
-	output reg signed [WORD_SIZE-1:0] q_out  // 2s16
+	output reg signed [WORD_SIZE-1:0] q_out,  // 2s16
+	output wire [ACC_WIDTH-1:0] phase_acc_dqz
 );
 
 	wire signed [WORD_SIZE-1:0] sine, cosine;
@@ -54,7 +55,8 @@ module dqz #(
 		.reset(reset),
 		.fcw(freq_in),
 		.sine(sine),
-		.cosine(cosine)
+		.cosine(cosine),
+		.phase_acc_dqz(phase_acc_dqz)
 	);
 	
 	reg [3:0] delay_counter;

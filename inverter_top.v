@@ -9,6 +9,7 @@ module inverter_top #(
     input wire [ACC_WIDTH-1:0] carrier_fcw,
     input wire signed [WORD_SIZE-1:0] d_in,
     input wire signed [WORD_SIZE-1:0] q_in,
+	 input wire [ACC_WIDTH-1:0] phase_acc_dqz,
 
     output wire u_high, u_low,
     output wire v_high, v_low,
@@ -33,7 +34,8 @@ spwm #(
     .d_in(d_in),
     .pwm_u(pwm_u),
     .pwm_v(pwm_v),
-    .pwm_w(pwm_w)
+    .pwm_w(pwm_w),
+	 .phase_acc_dqz(phase_acc_dqz)
 );
 
 // 2. Phase U Dead-Time - Phase a

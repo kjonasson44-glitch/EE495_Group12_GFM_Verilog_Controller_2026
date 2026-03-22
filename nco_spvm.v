@@ -47,6 +47,7 @@ module nco_spvm #(
     input  wire clk_en,
     input  wire reset,
     input  wire signed [ACC_WIDTH-1:0] fcw, 
+	 input wire [ACC_WIDTH-1:0] phase_acc_dqz,
     output wire signed [WORD_SIZE-1:0] sine,   
     output wire signed [WORD_SIZE-1:0] a_out,
     output wire signed [WORD_SIZE-1:0] b_out, // Added Phase B
@@ -85,15 +86,18 @@ module nco_spvm #(
     // ----- Phase Accumulators ----- //
     always @(posedge clk or posedge reset) begin
         if (reset) begin
-            phase_acc_old <= 0;
-        end else begin   
+            phase_acc_old <= phase_acc_dqz;
+        end else if (clk_en) begin
+				phase_acc_old <= phase_acc_dqz;
+			end
+		  else begin   
             // Note: clk_en was commented out in your original, leaving it as you had it
             phase_acc_old <= phase_acc_old + fcw;
         end
 		   // phace_acc_old must be updated to phase_acc from dqz on every clk 
     end
 
-    assign phase_acc = phase_acc_old - LEAD_CORRECTION;
+    assign phase_acc = phase_acc_old; // - LEAD_CORRECTION
     assign phase_cos = phase_acc - COS_OFFSET; 
     assign phase_b   = phase_acc - PHASE_B_OFFSET; // Phase B Shift
     assign phase_c   = phase_acc - PHASE_C_OFFSET; // Phase C Shift
