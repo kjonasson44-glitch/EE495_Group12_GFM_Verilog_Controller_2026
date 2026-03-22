@@ -30,7 +30,7 @@ module adc_reader_new (
      
     // Clock is 25 MHz. Desired sample rate is 720 Hz. 
     // Count = 25,000,000 / 720 = 34,722 
-    localparam TIMER_LIMIT = 34722; 
+    localparam TIMER_LIMIT = 3472; // Divided by 10 for new clk
      
     // State Definitions 
     localparam S_IDLE           = 0; 
@@ -41,6 +41,9 @@ module adc_reader_new (
     localparam S_READ_CAPTURE   = 5; // Capture data, Drive RD high 
     localparam S_UPDATE_OUTPUTS = 6; // Update final registers 
     localparam S_READ_HOLD      = 7; // New state to provide a 1-clock delay 
+	 localparam S_CONV_HOLD      = 8; // New state to provide a 1-clock delay 
+	 localparam S_CONV_HOLD2      = 9; // New state to provide a 1-clock delay
+	 localparam S_CONV_HOLD3      = 10; // New state to provide a 1-clock delay
  
     reg [3:0] state;             // Current State 
     reg [15:0] samp_timer;       // Timer for 720Hz 
@@ -72,7 +75,7 @@ module adc_reader_new (
             read_phase      <= 0; // Initialize read phase
              
             // UPDATED: CONVST idles High
-            CONVST          <= 1;  
+            CONVST          <= 0;  
             RD              <= 1;  
             reset_pin       <= 1; 
             loading         <= 0;  
@@ -92,7 +95,8 @@ module adc_reader_new (
                 // --------------------------------------------------------- 
                 S_IDLE: begin 
                     loading <= 0; 
-                    CONVST  <= 0; // Ensure Idle Low 
+                    CONVST  <= 0; // Ensure Idle Low
+						  RD		 <= 1; 
                     reset_pin <= 0; 
                      
                     if (samp_timer >= TIMER_LIMIT) begin 
@@ -104,20 +108,20 @@ module adc_reader_new (
                 end 
  
                 // --------------------------------------------------------- 
-                // 2. Drive CONVST Low 
+                // 2. Drive CONVST High (Rising Edge starts sampling) 
                 // --------------------------------------------------------- 
                 S_PULSE_LOW: begin 
                     loading <= 1; 
                     CONVST  <= 1; // Pulse High 
-                    state   <= S_PULSE_HIGH; 
+                    state   <= S_CONV_HOLD; 
                 end 
  
                 // --------------------------------------------------------- 
-                // 3. Drive CONVST High (Rising Edge starts sampling) 
+                // 3. Drive CONVST Low 
                 // --------------------------------------------------------- 
                 S_PULSE_HIGH: begin 
                     loading <= 1; 
-                    CONVST  <= 0; // Falling Edge! Sampling starts here. 
+                    CONVST  <= 0; // Falling Edge! Sampling starts here. //Sampling is on rising edge
                     state   <= S_WAIT_BUSY_LOW; 
                 end 
  
@@ -127,12 +131,19 @@ module adc_reader_new (
                 S_WAIT_BUSY_LOW: begin 
                     loading <= 1; 
                     CONVST  <= 0; // Hold Low 
+						  
+						  // Delete this if going back to busy clean == 0
+						  channel_index <= 0;
+                    read_phase    <= 0; // Ensure we start on the capture phase 
+						  state         <= S_READ_LOW;
+						  
                      
-                    if (busy_clean == 0) begin 
+							/*
+                    if (busy_clean ==0) begin // THIS IS wrong
                         channel_index <= 0;
                         read_phase    <= 0; // Ensure we start on the capture phase 
-                        state         <= S_READ_LOW; 
-                    end 
+								state         <= S_READ_LOW;
+                    end */
                 end 
  
                 // --------------------------------------------------------- 
@@ -158,7 +169,7 @@ module adc_reader_new (
                 // --------------------------------------------------------- 
                 S_READ_CAPTURE: begin 
                     loading <= 1; 
-                    RD      <= 1; // Drive High 
+                    RD      <= 0; // Drive High -> Keep low while reading (active low) 
                      
                     if (read_phase == 0) begin
                         // Phase 0: First pulse, capture the top 16 bits
@@ -183,7 +194,7 @@ module adc_reader_new (
                 // --------------------------------------------------------- 
                 S_READ_HOLD: begin 
                     loading <= 1; 
-                    RD      <= 1;        // Keep RD high for this extra cycle 
+                    RD      <= 1;        // Keep RD high for this extra cycle //Read goes high here because read is done these naming conventions are bad
                     state   <= S_READ_LOW; // Return to start the next read pulse
                 end 
  
@@ -204,6 +215,24 @@ module adc_reader_new (
                      
                     state <= S_IDLE; 
                 end 
+					 
+					 S_CONV_HOLD: begin 
+                    loading <= 1; 
+                    CONVST  <= 1; // Pulse High 
+                    state   <= S_CONV_HOLD2; 
+                end
+					 
+					 S_CONV_HOLD2: begin 
+                    loading <= 1; 
+                    CONVST  <= 1; // Pulse High 
+                    state   <= S_CONV_HOLD3; 
+                end
+					 
+					 S_CONV_HOLD3: begin 
+                    loading <= 1; 
+                    CONVST  <= 1; // Pulse High 
+                    state   <= S_PULSE_HIGH; 
+                end
  
                 default: state <= S_IDLE; 
             endcase 

@@ -173,7 +173,7 @@ initial begin
 	 J and D full neg 
 	 J and D half neg 
 	 */
-    freq_file = $fopen("MATH_CF_61_LONG_D12_J005.txt", "w");
+    freq_file = $fopen("DO_NOT_USE.txt", "w");
 	 $display("OPENING f_out_hardware_B0_58235.txt");
     if (freq_file == 0) begin
         $display("Error: Could not open file for writing.");
