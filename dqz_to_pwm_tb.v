@@ -118,13 +118,19 @@ ipll dut (
     .freq_out(freq_out)
 );
 */
+wire [ACC_WIDTH-1:0] phase_acc_dqz;
 
-srf_pll_1 dut (
+ipll dut (
     .clk(clk),
 	 .clk_en(clk_720),
     .reset(reset),
     .q_in(q_out),
-    .freq_out(freq_out)
+    .freq_out(freq_out),
+	 .B0(18'sd14359),
+	 .B1(18'sd490),
+	 .B2(-18'sd13869),
+    .A1(-18'sd126997),
+	 .A2(18'sd61522)
 );
 
 dqz dqz_inst (
@@ -136,7 +142,8 @@ dqz dqz_inst (
   .c_in(sig_c),
   .freq_in(freq_out),
   .d_out(d_out),
-  .q_out(q_out) 
+  .q_out(q_out),
+  .phase_acc_dqz(phase_acc_dqz)
 );
 
 
@@ -163,7 +170,9 @@ inverter_top #(
         .v_high(v_high),
         .v_low(v_low),
         .w_high(w_high),
-        .w_low(w_low)
+        .w_low(w_low),
+		  .phase_acc_dqz(phase_acc_dqz),
+		  .freq_in_dqz(freq_out)
     );
 
 integer freq_file;

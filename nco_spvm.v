@@ -48,6 +48,7 @@ module nco_spvm #(
     input  wire reset,
     input  wire signed [ACC_WIDTH-1:0] fcw, 
 	 input wire [ACC_WIDTH-1:0] phase_acc_dqz,
+	 input wire signed [ACC_WIDTH-1:0] freq_in_dqz,
     output wire signed [WORD_SIZE-1:0] sine,   
     output wire signed [WORD_SIZE-1:0] a_out,
     output wire signed [WORD_SIZE-1:0] b_out, // Added Phase B
@@ -88,7 +89,7 @@ module nco_spvm #(
         if (reset) begin
             phase_acc_old <= phase_acc_dqz;
         end else if (clk_en) begin
-				phase_acc_old <= phase_acc_dqz;
+				phase_acc_old <= phase_acc_dqz + freq_in_dqz;
 			end
 		  else begin   
             // Note: clk_en was commented out in your original, leaving it as you had it

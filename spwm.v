@@ -9,6 +9,7 @@ module spwm #(
     input  wire [ACC_WIDTH-1:0] carrier_fcw,  // Frequency control for the triangle carrier
     input  wire signed [WORD_SIZE-1:0] q_in, d_in,
 	 input wire [ACC_WIDTH-1:0] phase_acc_dqz,
+	 input wire signed [ACC_WIDTH-1:0] freq_in_dqz,
     output reg  pwm_u, pwm_v, pwm_w
 );
 
@@ -35,7 +36,8 @@ module spwm #(
         .a_out(a_out),
 		  .b_out(b_out),
 		  .c_out(c_out),
-		  .phase_acc_dqz(phase_acc_dqz)
+		  .phase_acc_dqz(phase_acc_dqz),
+		  .freq_in_dqz(freq_in_dqz)
     );
 
     // ----- 2. Triangular Carrier Generation (NCO) -----

@@ -414,6 +414,10 @@ R0
 R0
 R0
 R0
+R0
+R0
+R0
+R0
 !s11f MIXED_VERSIONS
 13
 !s112 1.1
@@ -434,16 +438,15 @@ n@_opt
 Z5 OL;O;2021.2;73
 R1
 T_opt1
-!s110 1774032176
-V=`;CC@nXC6lX<bgWa=UVS0
-04 10 4 work srf_pll_tb fast 0
-=2-b07b2523fddb-69bd9530-32452-204df
-R2
+!s110 1774143569
+Vaa3[:Sl[BV^3VTIgWCSCa1
+04 13 4 work dqz_to_pwm_tb fast 0
+=1-b07b252411d9-69bf4851-b54bb-12ed6
+!s124 OEM10U14 
 R3
 R4
 n@_opt1
 R5
-R1
 T_opt2
 !s110 1771451231
 VaXmig7GS[R565=:7F?5ZQ1
@@ -457,51 +460,51 @@ R5
 R1
 vadc_reader
 Z6 DXx6 sv_std 3 std 0 22 9oUSJO;AeEaW`l:M@^WG92
-Z7 !s110 1774032272
+Z7 !s110 1774143568
 !i10b 1
 !s100 ^kfiQ[khNQ6_hMb@Gl^dl0
 I3Hc<ki@]aZffag?lR9g3R2
 S1
 Z8 d/home/.engr-ece/lag051/ee495_capstone
-w1773438985
+Z9 w1774138139
 8./adc_reader.v
 F./adc_reader.v
 !i122 0
 L0 1 258
-Z9 VDg1SIo80bB@j0V0VzS_@n1
-Z10 OL;L;2021.2;73
+Z10 VDg1SIo80bB@j0V0VzS_@n1
+Z11 OL;L;2021.2;73
 r1
 !s85 0
 31
-Z11 !s108 1774032272.000000
-Z12 !s107 ./volt_control_filter.v|./volt_cont_tb.v|./tb_inverter_top.v|./srf_pll_tb.v|./srf_pll_1.v|./spwm_new.v|./spwm.v|./sine_rom.v|./nco_spvm.v|./nco_dqz.v|./ipll.v|./inverter_top_new.v|./inverter_top.v|./inverter_interface.v|./ee495_capstone.v|./ee465_capstone_pwm_test.v|./dqz_to_pwm_tb.v|./dqz_to_ipll_tb.v|./dqz_tb.v|./dqz.v|./carrier_nco.v|./amplitude_finder.v|./adc_reader_tb.v|./adc_reader_new.v|./adc_reader.v|
-Z13 !s90 -reportprogress|300|-sv|-work|work|./adc_reader.v|./adc_reader_new.v|./adc_reader_tb.v|./amplitude_finder.v|./carrier_nco.v|./dqz.v|./dqz_tb.v|./dqz_to_ipll_tb.v|./dqz_to_pwm_tb.v|./ee465_capstone_pwm_test.v|./ee495_capstone.v|./inverter_interface.v|./inverter_top.v|./inverter_top_new.v|./ipll.v|./nco_dqz.v|./nco_spvm.v|./sine_rom.v|./spwm.v|./spwm_new.v|./srf_pll_1.v|./srf_pll_tb.v|./tb_inverter_top.v|./volt_cont_tb.v|./volt_control_filter.v|
+Z12 !s108 1774143568.000000
+Z13 !s107 ./volt_control_filter.v|./volt_cont_tb.v|./tb_inverter_top.v|./srf_pll_tb.v|./srf_pll_1.v|./spwm_new.v|./spwm.v|./sine_rom.v|./nco_spvm.v|./nco_dqz.v|./ipll.v|./inverter_top_new.v|./inverter_top.v|./inverter_interface.v|./ee495_capstone.v|./ee465_capstone_pwm_test.v|./dqz_to_pwm_tb.v|./dqz_to_ipll_tb.v|./dqz_tb.v|./dqz.v|./carrier_nco.v|./amplitude_finder.v|./adc_reader_tb.v|./adc_reader_new.v|./adc_reader.v|
+Z14 !s90 -reportprogress|300|-sv|-work|work|./adc_reader.v|./adc_reader_new.v|./adc_reader_tb.v|./amplitude_finder.v|./carrier_nco.v|./dqz.v|./dqz_tb.v|./dqz_to_ipll_tb.v|./dqz_to_pwm_tb.v|./ee465_capstone_pwm_test.v|./ee495_capstone.v|./inverter_interface.v|./inverter_top.v|./inverter_top_new.v|./ipll.v|./nco_dqz.v|./nco_spvm.v|./sine_rom.v|./spwm.v|./spwm_new.v|./srf_pll_1.v|./srf_pll_tb.v|./tb_inverter_top.v|./volt_cont_tb.v|./volt_control_filter.v|
 !i113 0
-Z14 o-sv -work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+Z15 o-sv -work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
 R4
 vadc_reader_new
 R6
 R7
 !i10b 1
-!s100 kYJkEO0nCAZDSWbOd6TIL1
-In[n:PALHEP4Aj4Odb[?0]3
+!s100 ^2=_inhi@o7nPgT61NS1V0
+ICKajQa]NGUC;];LEBf<5>3
 S1
 R8
-w1773973325
+R9
 8./adc_reader_new.v
 F./adc_reader_new.v
 !i122 0
-L0 1 213
-R9
+L0 1 242
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vadc_reader_tb
 R6
@@ -516,16 +519,16 @@ w1768936491
 F./adc_reader_tb.v
 !i122 0
 L0 1 132
-R9
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vamplitude_finder
 R6
@@ -539,17 +542,17 @@ w1773991096
 8./amplitude_finder.v
 F./amplitude_finder.v
 !i122 0
-Z15 L0 1 40
-R9
+Z16 L0 1 40
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vcarrier_nco
 R6
@@ -563,41 +566,41 @@ w1773435799
 8./carrier_nco.v
 F./carrier_nco.v
 !i122 0
-R15
-R9
+R16
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vdqz
 R6
 R7
 !i10b 1
-!s100 ^E>?VZ`cohR_VfZWFoT4?3
-IcB:YeK?J3AEo6=`WN7DQc1
+!s100 OdV`o5hh<Il<nZ0P_<imI2
+IED5kBWLSN^O]YlJ24Qel@1
 S1
 R8
-w1773428627
+w1774139224
 8./dqz.v
 F./dqz.v
 !i122 0
-L0 33 72
-R9
+L0 33 74
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vdqz_tb
 R6
@@ -612,64 +615,64 @@ w1772666733
 F./dqz_tb.v
 !i122 0
 L0 1 127
-R9
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vdqz_to_ipll_tb
 R6
 R7
 !i10b 1
-!s100 ^[lnA2m=D9P>LWmY591Q12
-I[?T7`ZdS7O<fZzEk1F5L93
+!s100 Eid4iEL5`g9goCKf;^QeR0
+I21:NYNL=G:Se<aFa;i7Ge0
 S1
 R8
-w1772823763
+Z17 w1774138140
 8./dqz_to_ipll_tb.v
 F./dqz_to_ipll_tb.v
 !i122 0
 L0 1 230
-R9
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vdqz_to_pwm_tb
 R6
 R7
 !i10b 1
-!s100 3h6^dFFEkfiUFQaiheTW:2
-I]=ibP=naS[L_^87ce1oTd2
+!s100 79HbN8lmE9C<KVlW7X]FV1
+I^9Y`iab88iB_mM<BT2>bF1
 S1
 R8
-w1773159051
+w1774143390
 8./dqz_to_pwm_tb.v
 F./dqz_to_pwm_tb.v
 !i122 0
-L0 1 205
-R9
+L0 1 214
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vinverter_interface
 R6
@@ -684,40 +687,40 @@ w1773355521
 F./inverter_interface.v
 !i122 0
 L0 1 32
-R9
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vinverter_top
 R6
 R7
 !i10b 1
-!s100 =1HAz4hB]X`g3]c7n[M971
-I13CleBMNkAm5E4]LKm]Dd3
+!s100 g5Z7aV8c026Znd1L9]2I>1
+IeYd?3WGa2WLLgmLKcKKZG0
 S1
 R8
-w1773434265
+w1774143446
 8./inverter_top.v
 F./inverter_top.v
 !i122 0
-L0 1 72
-R9
+L0 1 76
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vinverter_top_new
 R6
@@ -732,88 +735,88 @@ w1773994411
 F./inverter_top_new.v
 !i122 0
 L0 1 74
-R9
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vipll
 R6
 R7
 !i10b 1
-!s100 2dMe4kC3E4B2[O?_2B9^L3
-IDXSTQ_WH3CgJ:VHoGzY7R1
+!s100 VKFIiiaQQ0I]IhDIK42YD1
+I^_4>Eo17^iN5_Nf[U@ec^3
 S1
 R8
-w1773972335
+w1774137450
 8./ipll.v
 F./ipll.v
 !i122 0
-L0 1 121
-R9
+L0 1 125
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vnco_dqz
 R6
 R7
 !i10b 1
-!s100 CXVVok2U35<;S0FHA8h623
-ISz]iz;0c0Q5kMe4Bm8HDk1
+!s100 FF@RgS36;N4hdYAC0=GG72
+IRE=CVVagaco4nE<EZ]ZNR3
 S1
 R8
-w1773103098
+w1774140594
 8./nco_dqz.v
 F./nco_dqz.v
 !i122 0
-L0 28 70
-R9
+L0 28 71
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vnco_spvm
 R6
 R7
 !i10b 1
-!s100 D1WaXBYPHcYFoEU620o253
-IISmlzZiSz0VR7CYF]o7f<3
+!s100 DzCW:[4b8gogbXDNA;k131
+I8Oig2aKbXdGdC;Jmb;4oY3
 S1
 R8
-w1773435809
+w1774143357
 8./nco_spvm.v
 F./nco_spvm.v
 !i122 0
-L0 41 112
-R9
+L0 41 118
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vsine_rom
 R6
@@ -828,40 +831,40 @@ w1770056551
 F./sine_rom.v
 !i122 0
 L0 1 24
-R9
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vspwm
 R6
 R7
 !i10b 1
-!s100 L1=ZI=jR<Oi?kn;BRHdD^1
-IZkRf:6UL2ZjA]?@>4:Gz@0
+!s100 kXCG:Qz61n7CTobBM8mXz0
+IZ^QlJM]=[jZ=Zz9XQEhe21
 S1
 R8
-w1773435680
+w1774143466
 8./spwm.v
 F./spwm.v
 !i122 0
-L0 1 64
-R9
+L0 1 68
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vspwm_new
 R6
@@ -875,17 +878,17 @@ w1773994283
 8./spwm_new.v
 F./spwm_new.v
 !i122 0
-Z16 L0 1 89
-R9
+Z18 L0 1 89
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vsrf_pll_1
 R6
@@ -900,38 +903,40 @@ w1773969234
 F./srf_pll_1.v
 !i122 0
 L0 1 80
-R9
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vsrf_pll_tb
+R6
 R7
 !i10b 1
-!s100 zgFgF5UMlYOhG:ebD`d2@0
-IgY<O0@k^Mf;2;JXWZ3eQN2
+!s100 A?]@?9R>=6HE]zeZ<ba963
+Ia[VM?hbz^g]ddOO2;aEzD1
+S1
 R8
-w1774032170
+R17
 8./srf_pll_tb.v
 F./srf_pll_tb.v
-!i122 1
-R16
-R9
+!i122 0
+R18
 R10
+R11
 r1
 !s85 0
 31
-R11
-!s107 ./srf_pll_tb.v|
-!s90 -reportprogress|300|-work|work|./srf_pll_tb.v|
+R12
+R13
+R14
 !i113 0
-o-work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R15
 R4
 vtb_inverter_top
 R6
@@ -946,16 +951,16 @@ w1773102345
 F./tb_inverter_top.v
 !i122 0
 L0 3 104
-R9
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vvolt_cont_tb
 R6
@@ -970,16 +975,16 @@ w1773994550
 F./volt_cont_tb.v
 !i122 0
 L0 1 78
-R9
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4
 vvolt_control_filt
 R6
@@ -993,15 +998,15 @@ w1773990089
 8./volt_control_filter.v
 F./volt_control_filter.v
 !i122 0
-R16
-R9
+R18
 R10
+R11
 r1
 !s85 0
 31
-R11
 R12
 R13
-!i113 0
 R14
+!i113 0
+R15
 R4

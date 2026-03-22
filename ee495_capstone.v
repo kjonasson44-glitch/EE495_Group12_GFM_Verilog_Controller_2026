@@ -319,6 +319,7 @@ inverter_top #(
         .clk_en(clk_en),
         .reset(reset),
         .freq_in(freq_out_fast),
+		  .freq_in_dqz(freq_out),
         .carrier_fcw(carrier_freq),
         .d_in(d_out), // This doesn't use q out anyway
         .q_in(q_out), // This doesn't use d out

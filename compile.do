@@ -14,7 +14,7 @@
 set SIMULATION_LENGTH 280ms
 set SOURCE_DIR "./"
 set TB_DIR "./"
-set TB_MODULE "srf_pll_tb"
+set TB_MODULE "dqz_to_pwm_tb"
 
 # End of variables to configure
 
