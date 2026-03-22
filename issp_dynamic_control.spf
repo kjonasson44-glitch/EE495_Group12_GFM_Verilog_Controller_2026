@@ -1,4 +1,4 @@
-<session jtag_chain="USB-Blaster [1-1]" jtag_device="@1: 10CL120(Y|Z)/EP3C120/.. (0x020F70DD)">
+<session jtag_chain="USB-Blaster [1-7]" jtag_device="@1: 10CL120(Y|Z)/EP3C120/.. (0x020F70DD)">
   <display_attributes is_max_probe_read_interval="1" is_write_immediate="1" probe_read_interval="1" probe_read_interval_units="s"/>
   <instance enable_logging="true" entity_name="IPLL" is_auto_node="true" name="IPLL">
     <node_ip_info instance_id="0" mfg_id="110" node_id="9" version="0"/>
@@ -345,7 +345,8 @@
     </view>
     <alias_list>
       <alias alias="reset" name="source[90]"/>
-      <alias alias="mode" name="source[91]"/>
+      <alias alias="GFL_mode" name="source[91]"/>
+      <alias alias="Comb_mode" name="source[92]"/>
     </alias_list>
     <log data="71838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F0000000000000000000" max_size="8" size="8" time="0452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB9600000000" width="164"/>
   </instance>
