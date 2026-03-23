@@ -30,7 +30,7 @@ module volt_cont_tb;
     );
 
     // 2. Voltage Control Filter (The PI Loop)
-    volt_control_filt u_volt_ctrl (
+    volt_control_filter u_volt_ctrl (
         .clk(clk), .reset(reset), .clk_en(clk_en),
         .V_input(tracked_amplitude),
         .V_output(nco_v_output)

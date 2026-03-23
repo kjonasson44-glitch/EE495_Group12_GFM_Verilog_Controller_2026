@@ -180,12 +180,30 @@ issp_control issp_control_inst (
 wire GFL_mode = issp_source_bus[91];
 wire combination_mode = issp_source_bus[92];
 wire reset = issp_source_bus[90];
+
+/*
 wire signed [17:0] a2_issp = $signed(issp_source_bus[89:72]);
 wire signed [17:0] a1_issp = $signed(issp_source_bus[71:54]);
 wire signed [17:0] b2_issp = $signed(issp_source_bus[53:36]);
 wire signed [17:0] b1_issp = $signed(issp_source_bus[35:18]);
 wire signed [17:0] b0_issp = $signed(issp_source_bus[17:0]);
+*/
+wire signed [31:0] KP_issp = 32'sd429496730;
+wire signed [15:0] VREF_issp = $signed(issp_source_bus[89:74]);
+wire signed [15:0] VMAX_issp = $signed(issp_source_bus[73:58]);
+wire signed [15:0] VMIN_issp = $signed(issp_source_bus[57:42]);
+wire signed [15:0] CONVERSION_issp = $signed(issp_source_bus[41:23]);
+wire signed [9:0] KI_issp = $signed(issp_source_bus[22:13]);
+wire signed [31:0] DT_issp = 32'sd172;
+wire VOLT_CONTROL_OFF = issp_source_bus[12];
 
+/*
+wire signed [17:0] a2_issp = $signed(issp_source_bus[89:72]);
+wire signed [17:0] a1_issp = $signed(issp_source_bus[71:54]);
+wire signed [17:0] b2_issp = $signed(issp_source_bus[53:36]);
+wire signed [17:0] b1_issp = $signed(issp_source_bus[35:18]);
+wire signed [17:0] b0_issp = $signed(issp_source_bus[17:0]);
+*/
 // adc_reader - reads from adc into our registers - uses GPIO
 
 adc_reader inst_adc_reader (
@@ -235,6 +253,7 @@ adc_reader inst_adc_reader (
 
 
 wire [ACC_WIDTH-1:0] phase_acc_dqz;
+wire [15:0] amplitude;
 // dqz - converts three phase signals into the quadrature value we use - also has the NCO_dqz inside 
 dqz #(
     .WORD_SIZE(18),
@@ -249,7 +268,8 @@ dqz #(
     .freq_in(freq_out), // Taking the frequency/phase output from the IPLL
     .d_out(d_out),
     .q_out(q_out),
-	 .phase_acc_dqz(phase_acc_dqz)
+	 .phase_acc_dqz(phase_acc_dqz),
+	 .amplitude(amplitude)
 );
 
 // ipll - inertial phase lock loop - takes quadrature value and outputs corresponding frequency
@@ -260,11 +280,11 @@ ipll #(
     .clk(clk),
 	.clk_en(clk_en),
     .reset(reset),
-    .B0(b0_issp),
-    .B1(b1_issp),
-    .B2(b2_issp),
-    .A1(a1_issp),
-    .A2(a2_issp),
+    .B0(18'sd14359),
+    .B1(18'sd490),
+    .B2(-18'sd13869),
+    .A1(-18'sd126997),
+    .A2(18'sd61522),
     .q_in(q_in_ipll),     // Feeding the Q-axis error into the PLL
     .freq_out(freq_out_ipll)
 );
@@ -308,10 +328,32 @@ wire signed [17:0] q_in_ipll = srf_active ? 18'sd0 : q_out;
 (* noprune *) wire signed [31:0] freq_out_fast = freq_out_fast_big[63:32]; // Top 32 bits after multiplication
 (* noprune *) wire signed [31:0] carrier_freq = freq_out_fast * CARRIER_CONV; // freq out fast multiplied by our modulation constant (75)
 
+//reg signed [15:0] adc_in_a;
+(* noprune *) wire [15:0] tracked_amplitude_A;
+(* noprune *) wire signed [15:0] nco_v_output;
+
+
+amplitude_finder u_amp_finder (
+        .clk(clk), .reset(reset), .adc_in(VA), .amplitude(tracked_amplitude_A)
+); 
+
+volt_control_filt u_volt_ctrl (
+        .clk(clk), .reset(reset), .clk_en(clk_en),
+        .V_input(amplitude),
+		  .KP(KP_issp),
+		  .VREF(VREF_issp),
+		  .VOLT_CONTROL_OFF(VOLT_CONTROL_OFF),
+		  .DT(DT_issp),
+		  .VMIN(VMIN_issp),
+		  .VMAX(VMAX_issp),
+		  .KI(KI_issp),
+		  .CONVERSION(CONVERSION_issp),
+        .V_output(nco_v_output)
+    );
 /*
 spwm - pulse width modulation - controls switches of inverter with GPIO
 */
-inverter_top #(
+inverter_top_new #(
         .WORD_SIZE(18),
         .ACC_WIDTH(32)
     ) inst_inverter_top (
@@ -319,7 +361,7 @@ inverter_top #(
         .clk_en(clk_en),
         .reset(reset),
         .freq_in(freq_out_fast),
-		  .freq_in_dqz(freq_out),
+		  //.freq_in_dqz(freq_out),
         .carrier_fcw(carrier_freq),
         .d_in(d_out), // This doesn't use q out anyway
         .q_in(q_out), // This doesn't use d out
@@ -329,9 +371,10 @@ inverter_top #(
         .v_low(v_low),
         .w_high(w_high),
         .w_low(w_low),
-		  .phase_acc_dqz(phase_acc_dqz)
+		  .phase_acc_dqz(phase_acc_dqz),
+		  .V_scale(nco_v_output)
     );
-
+	 
 
 /*
 math - calculates power and other things we want to monitor in our data

@@ -7,7 +7,7 @@ module amplitude_finder (
 
     reg [15:0] abs_val;
     reg [19:0] decay_cnt;
-    parameter DECAY_RATE = 20'd208333; // Adjust for tracking speed - Decay's every 6/720 seconds (120 hz) - Ensures half cycle per decay 
+    parameter DECAY_RATE = 20'd1083330; // Adjust for tracking speed - Decay's every 6/720 seconds (120 hz) - Ensures half cycle per decay 
 	 // Decay of about 100 seems reasonable, but I will do 150 just to be safe
     always @(posedge clk or posedge reset) begin
         if (reset) begin

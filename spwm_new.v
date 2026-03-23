@@ -9,6 +9,7 @@ module spwm_new #(
     input  wire [ACC_WIDTH-1:0] carrier_fcw,  // Frequency control for the triangle carrier
     input  wire signed [WORD_SIZE-1:0] q_in, d_in,
 	 input  wire signed [15:0] V_scale,
+	 input wire [ACC_WIDTH-1:0] phase_acc_dqz,
     output reg  pwm_u, pwm_v, pwm_w
 );
 
@@ -56,6 +57,7 @@ module spwm_new #(
         .reset(reset),
         .fcw(freq_in),
         .sine(sine),
+		  .phase_acc_dqz(phase_acc_dqz),
         .a_out(a_out),
 		  .b_out(b_out),
 		  .c_out(c_out)

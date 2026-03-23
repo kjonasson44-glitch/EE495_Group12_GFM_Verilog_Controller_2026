@@ -1,97 +1,97 @@
-<session jtag_chain="USB-Blaster [1-7]" jtag_device="@1: 10CL120(Y|Z)/EP3C120/.. (0x020F70DD)">
+<session jtag_chain="USB-Blaster [1-13]" jtag_device="@1: 10CL120(Y|Z)/EP3C120/.. (0x020F70DD)">
   <display_attributes is_max_probe_read_interval="1" is_write_immediate="1" probe_read_interval="1" probe_read_interval_units="s"/>
   <instance enable_logging="true" entity_name="IPLL" is_auto_node="true" name="IPLL">
     <node_ip_info instance_id="0" mfg_id="110" node_id="9" version="0"/>
     <sources>
-      <source name="source[0]" value="true"/>
+      <source name="source[0]" value="false"/>
       <source name="source[1]" value="true"/>
       <source name="source[2]" value="true"/>
       <source name="source[3]" value="false"/>
       <source name="source[4]" value="true"/>
-      <source name="source[5]" value="false"/>
+      <source name="source[5]" value="true"/>
       <source name="source[6]" value="false"/>
       <source name="source[7]" value="false"/>
-      <source name="source[8]" value="false"/>
-      <source name="source[9]" value="false"/>
+      <source name="source[8]" value="true"/>
+      <source name="source[9]" value="true"/>
       <source name="source[10]" value="false"/>
       <source name="source[11]" value="true"/>
-      <source name="source[12]" value="true"/>
-      <source name="source[13]" value="true"/>
-      <source name="source[14]" value="false"/>
+      <source name="source[12]" value="false"/>
+      <source name="source[13]" value="false"/>
+      <source name="source[14]" value="true"/>
       <source name="source[15]" value="false"/>
       <source name="source[16]" value="false"/>
       <source name="source[17]" value="false"/>
       <source name="source[18]" value="false"/>
-      <source name="source[19]" value="true"/>
+      <source name="source[19]" value="false"/>
       <source name="source[20]" value="false"/>
-      <source name="source[21]" value="true"/>
+      <source name="source[21]" value="false"/>
       <source name="source[22]" value="false"/>
-      <source name="source[23]" value="true"/>
+      <source name="source[23]" value="false"/>
       <source name="source[24]" value="true"/>
-      <source name="source[25]" value="true"/>
+      <source name="source[25]" value="false"/>
       <source name="source[26]" value="true"/>
-      <source name="source[27]" value="false"/>
-      <source name="source[28]" value="false"/>
+      <source name="source[27]" value="true"/>
+      <source name="source[28]" value="true"/>
       <source name="source[29]" value="false"/>
       <source name="source[30]" value="false"/>
-      <source name="source[31]" value="false"/>
-      <source name="source[32]" value="false"/>
-      <source name="source[33]" value="false"/>
+      <source name="source[31]" value="true"/>
+      <source name="source[32]" value="true"/>
+      <source name="source[33]" value="true"/>
       <source name="source[34]" value="false"/>
       <source name="source[35]" value="false"/>
-      <source name="source[36]" value="true"/>
-      <source name="source[37]" value="true"/>
+      <source name="source[36]" value="false"/>
+      <source name="source[37]" value="false"/>
       <source name="source[38]" value="false"/>
       <source name="source[39]" value="false"/>
-      <source name="source[40]" value="true"/>
+      <source name="source[40]" value="false"/>
       <source name="source[41]" value="false"/>
-      <source name="source[42]" value="true"/>
-      <source name="source[43]" value="true"/>
-      <source name="source[44]" value="true"/>
+      <source name="source[42]" value="false"/>
+      <source name="source[43]" value="false"/>
+      <source name="source[44]" value="false"/>
       <source name="source[45]" value="false"/>
       <source name="source[46]" value="false"/>
-      <source name="source[47]" value="true"/>
+      <source name="source[47]" value="false"/>
       <source name="source[48]" value="false"/>
-      <source name="source[49]" value="false"/>
-      <source name="source[50]" value="true"/>
+      <source name="source[49]" value="true"/>
+      <source name="source[50]" value="false"/>
       <source name="source[51]" value="true"/>
       <source name="source[52]" value="true"/>
       <source name="source[53]" value="true"/>
       <source name="source[54]" value="true"/>
       <source name="source[55]" value="true"/>
       <source name="source[56]" value="false"/>
-      <source name="source[57]" value="true"/>
+      <source name="source[57]" value="false"/>
       <source name="source[58]" value="false"/>
       <source name="source[59]" value="true"/>
       <source name="source[60]" value="true"/>
       <source name="source[61]" value="true"/>
-      <source name="source[62]" value="true"/>
-      <source name="source[63]" value="true"/>
-      <source name="source[64]" value="true"/>
+      <source name="source[62]" value="false"/>
+      <source name="source[63]" value="false"/>
+      <source name="source[64]" value="false"/>
       <source name="source[65]" value="true"/>
       <source name="source[66]" value="false"/>
       <source name="source[67]" value="false"/>
-      <source name="source[68]" value="false"/>
+      <source name="source[68]" value="true"/>
       <source name="source[69]" value="false"/>
       <source name="source[70]" value="false"/>
-      <source name="source[71]" value="true"/>
-      <source name="source[72]" value="false"/>
+      <source name="source[71]" value="false"/>
+      <source name="source[72]" value="true"/>
       <source name="source[73]" value="false"/>
       <source name="source[74]" value="false"/>
       <source name="source[75]" value="false"/>
-      <source name="source[76]" value="true"/>
-      <source name="source[77]" value="false"/>
-      <source name="source[78]" value="true"/>
+      <source name="source[76]" value="false"/>
+      <source name="source[77]" value="true"/>
+      <source name="source[78]" value="false"/>
       <source name="source[79]" value="false"/>
       <source name="source[80]" value="false"/>
-      <source name="source[81]" value="false"/>
-      <source name="source[82]" value="false"/>
+      <source name="source[81]" value="true"/>
+      <source name="source[82]" value="true"/>
       <source name="source[83]" value="false"/>
       <source name="source[84]" value="true"/>
-      <source name="source[85]" value="true"/>
-      <source name="source[86]" value="true"/>
-      <source name="source[87]" value="true"/>
-      <source name="source[88]" value="false"/>
+      <source name="source[85]" value="false"/>
+      <source name="source[86]" value="false"/>
+      <source name="source[87]" value="false"/>
+      <source name="source[88]" value="true"/>
       <source name="source[89]" value="false"/>
       <source name="source[90]" value="false"/>
       <source name="source[91]" value="false"/>
@@ -247,7 +247,7 @@
       <view_node expanded="true" index="92" node_type="source" view_type="independent"/>
       <view_node expanded="true" index="91" node_type="source" view_type="independent"/>
       <view_node expanded="true" index="90" node_type="source" view_type="independent"/>
-      <view_node expanded="false" group_name="source[89..72]" index="0" lsb_to_msb="false" name="issp_a2" node_type="source" radix="dec" view_type="group_header"/>
+      <view_node expanded="false" group_name="source[89..74]" index="0" lsb_to_msb="false" name="VREF" node_type="source" view_type="group_header"/>
       <view_node expanded="true" index="89" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="88" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="87" node_type="source" view_type="group_member"/>
@@ -264,9 +264,9 @@
       <view_node expanded="true" index="76" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="75" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="74" node_type="source" view_type="group_member"/>
+      <view_node expanded="false" group_name="source[73..58]" index="0" lsb_to_msb="false" name="VMAX" node_type="source" view_type="group_header"/>
       <view_node expanded="true" index="73" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="72" node_type="source" view_type="group_member"/>
-      <view_node expanded="false" group_name="source[71..54]" index="0" lsb_to_msb="false" name="issp_a1" node_type="source" radix="dec" view_type="group_header"/>
       <view_node expanded="true" index="71" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="70" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="69" node_type="source" view_type="group_member"/>
@@ -281,11 +281,11 @@
       <view_node expanded="true" index="60" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="59" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="58" node_type="source" view_type="group_member"/>
+      <view_node expanded="false" group_name="source[57..42]" index="0" lsb_to_msb="false" name="VMIN" node_type="source" view_type="group_header"/>
       <view_node expanded="true" index="57" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="56" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="55" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="54" node_type="source" view_type="group_member"/>
-      <view_node expanded="false" group_name="source[53..36]" index="0" lsb_to_msb="false" name="issp_b2" node_type="source" radix="dec" view_type="group_header"/>
       <view_node expanded="true" index="53" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="52" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="51" node_type="source" view_type="group_member"/>
@@ -298,13 +298,13 @@
       <view_node expanded="true" index="44" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="43" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="42" node_type="source" view_type="group_member"/>
+      <view_node expanded="false" group_name="source[41..23]" index="0" lsb_to_msb="false" name="CONVERSION" node_type="source" view_type="group_header"/>
       <view_node expanded="true" index="41" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="40" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="39" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="38" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="37" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="36" node_type="source" view_type="group_member"/>
-      <view_node expanded="false" group_name="source[35..18]" index="0" lsb_to_msb="false" name="issp_b1" node_type="source" radix="dec" view_type="group_header"/>
       <view_node expanded="true" index="35" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="34" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="33" node_type="source" view_type="group_member"/>
@@ -318,35 +318,36 @@
       <view_node expanded="true" index="25" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="24" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="23" node_type="source" view_type="group_member"/>
+      <view_node expanded="false" group_name="source[22..13]" index="0" lsb_to_msb="false" name="KI" node_type="source" view_type="group_header"/>
       <view_node expanded="true" index="22" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="21" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="20" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="19" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="18" node_type="source" view_type="group_member"/>
-      <view_node expanded="false" group_name="source[17..0]" index="0" lsb_to_msb="false" name="issp_b0" node_type="source" radix="dec" view_type="group_header"/>
       <view_node expanded="true" index="17" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="16" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="15" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="14" node_type="source" view_type="group_member"/>
       <view_node expanded="true" index="13" node_type="source" view_type="group_member"/>
-      <view_node expanded="true" index="12" node_type="source" view_type="group_member"/>
-      <view_node expanded="true" index="11" node_type="source" view_type="group_member"/>
-      <view_node expanded="true" index="10" node_type="source" view_type="group_member"/>
-      <view_node expanded="true" index="9" node_type="source" view_type="group_member"/>
-      <view_node expanded="true" index="8" node_type="source" view_type="group_member"/>
-      <view_node expanded="true" index="7" node_type="source" view_type="group_member"/>
-      <view_node expanded="true" index="6" node_type="source" view_type="group_member"/>
-      <view_node expanded="true" index="5" node_type="source" view_type="group_member"/>
-      <view_node expanded="true" index="4" node_type="source" view_type="group_member"/>
-      <view_node expanded="true" index="3" node_type="source" view_type="group_member"/>
-      <view_node expanded="true" index="2" node_type="source" view_type="group_member"/>
-      <view_node expanded="true" index="1" node_type="source" view_type="group_member"/>
-      <view_node expanded="true" index="0" node_type="source" view_type="group_member"/>
+      <view_node expanded="true" index="12" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="11" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="10" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="9" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="8" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="7" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="6" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="5" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="4" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="3" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="2" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="1" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="0" node_type="source" view_type="independent"/>
     </view>
     <alias_list>
       <alias alias="reset" name="source[90]"/>
       <alias alias="GFL_mode" name="source[91]"/>
       <alias alias="Comb_mode" name="source[92]"/>
+      <alias alias="VOLT_CONTROL_OFF" name="source[12]"/>
     </alias_list>
     <log data="71838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F0000000000000000000" max_size="8" size="8" time="0452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB9600000000" width="164"/>
   </instance>

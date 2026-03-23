@@ -7,7 +7,7 @@ V_ref = V_nominal_rms * sqrt(2);      % Reference Peak Voltage (~170 Volts)
 
 % PI Controller Gains
 Kp = 0.1;  % Proportional gain
-Ki = 2.5;  % Integral gain
+Ki = 2;  % Integral gain
 
 % Time vector setup
 dt = 0.01;         % Simulation time step (seconds)
@@ -32,7 +32,7 @@ V_out_step(1) = V_ref;
 % Run the Closed-Loop PI Controller
 for k = 2:N
     % 1. Error = Input Voltage - Output of System (Negative Feedback)
-    error_step(k) = V_step_input(k) - V_out_step(k-1);
+    error_step(k) = V_step_input(k) - 170;
     
     % 2. Pass error through (Kp + Ki/s)
     integral_acc = integral_acc + (error_step(k) * dt);
@@ -116,10 +116,174 @@ ylabel('Error (V)');
 grid on;
 
 subplot(3, 2, 6);
-plot(t, (170 - pi_out_ramp), 'm', 'LineWidth', 1.5);
+plot(t, (170 - pi_out_ramp)/204, 'm', 'LineWidth', 1.5);
 title('170 - PI Controller Action (Kp*e + Ki*int(e))');
 xlabel('Time (s)');
 ylabel('Control Effort (V)');
+grid on;
+
+% Need a Vref that is actually VREF
+% Need to change output scale  obviously 
+% Need to add a scalar that can scale the difference properly
+
+sgtitle('Closed-Loop Tracking Performance (System Output = PI Action + V_{ref})');
+
+%% Closed-Loop PI Controller Response to Step, Ramp, and Sag/Swell Voltage Changes
+clear; clc; close all;
+
+% 1. Define System Parameters
+V_nominal_rms = 120;                  % Nominal RMS Voltage
+V_ref = V_nominal_rms * sqrt(2);      % Reference Peak Voltage (~169.7 Volts)
+
+% PI Controller Gains
+Kp = 0.1;  % Proportional gain
+Ki = 2;  % Integral gain
+
+% Time vector setup
+dt = 0.01;         % Simulation time step (seconds)
+t = 0:dt:10;       % Simulate for 10 seconds
+N = length(t);     % Number of samples
+
+% =========================================================================
+% 2. Scenario 1: Step Change
+% Starts at ~170V, steps down to 140V at t=2s
+% =========================================================================
+V_step_input = V_ref * ones(1, N);
+step_start = find(t >= 2, 1);
+V_step_input(step_start:end) = 140; 
+
+error_step = zeros(1, N);
+pi_out_step = zeros(1, N);
+V_out_step = zeros(1, N);
+integral_acc = 0; 
+V_out_step(1) = V_ref; 
+
+for k = 2:N
+    error_step(k) = V_step_input(k) - V_out_step(k-1);
+    integral_acc = integral_acc + (error_step(k) * dt);
+    pi_out_step(k) = (Kp * error_step(k)) + (Ki * integral_acc);
+    V_out_step(k) = pi_out_step(k) + V_ref;
+end
+
+% =========================================================================
+% 3. Scenario 2: Ramp Up and Down
+% Starts at ~170V, ramps to 180V, then back down to ~170V
+% =========================================================================
+V_ramp_input = V_ref * ones(1, N);
+idx_up = (t >= 2 & t < 4);
+V_ramp_input(idx_up) = V_ref + ((180 - V_ref) / 2) * (t(idx_up) - 2);
+idx_down = (t >= 4 & t < 6);
+V_ramp_input(idx_down) = 180 - ((180 - V_ref) / 2) * (t(idx_down) - 4);
+
+error_ramp = zeros(1, N);
+pi_out_ramp = zeros(1, N);
+V_out_ramp = zeros(1, N);
+integral_acc = 0; 
+V_out_ramp(1) = V_ref;
+
+for k = 2:N
+    error_ramp(k) = V_ramp_input(k) - V_out_ramp(k-1); 
+    integral_acc = integral_acc + (error_ramp(k) * dt);
+    pi_out_ramp(k) = (Kp * error_ramp(k)) + (Ki * integral_acc);
+    V_out_ramp(k) = pi_out_ramp(k) + V_ref;
+end
+
+% =========================================================================
+% 4. Scenario 3: Voltage Sag and Swell (Lower and Higher)
+% Starts at ~170V, sags to 130V, surges to 200V, returns to nominal
+% =========================================================================
+V_sag_swell_input = V_ref * ones(1, N);
+
+% Sag down to 130V
+idx_sag_down = (t >= 1 & t < 2);
+V_sag_swell_input(idx_sag_down) = V_ref - (V_ref - 130) * (t(idx_sag_down) - 1);
+% Hold Sag
+idx_sag_hold = (t >= 2 & t < 4);
+V_sag_swell_input(idx_sag_hold) = 130;
+% Swell up to 200V (Ramping from 130 to 200 over 1 second)
+idx_swell_up = (t >= 4 & t < 5);
+V_sag_swell_input(idx_swell_up) = 130 + (200 - 130) * (t(idx_swell_up) - 4);
+% Hold Swell
+idx_swell_hold = (t >= 5 & t < 7);
+V_sag_swell_input(idx_swell_hold) = 200;
+% Return to nominal
+idx_return = (t >= 7 & t < 8);
+V_sag_swell_input(idx_return) = 200 - (200 - V_ref) * (t(idx_return) - 7);
+
+error_ss = zeros(1, N);
+pi_out_ss = zeros(1, N);
+V_out_ss = zeros(1, N);
+integral_acc = 0; 
+V_out_ss(1) = V_ref;
+
+for k = 2:N
+    error_ss(k) = V_sag_swell_input(k) - V_out_ss(k-1); 
+    integral_acc = integral_acc + (error_ss(k) * dt);
+    pi_out_ss(k) = (Kp * error_ss(k)) + (Ki * integral_acc);
+    V_out_ss(k) = pi_out_ss(k) + V_ref;
+end
+
+% =========================================================================
+% 5. Plotting the Results
+% =========================================================================
+figure('Name', 'Closed-Loop PI Response', 'Position', [50, 100, 1400, 700]);
+
+% --- Column 1: Step Change Plots ---
+subplot(3, 3, 1);
+plot(t, V_step_input, 'k--', 'LineWidth', 1.5); hold on;
+plot(t, V_out_step, 'b', 'LineWidth', 1.5);
+title('Tracking: Step Change');
+ylabel('Voltage (V)');
+legend('Target Input', 'System Output', 'Location', 'best');
+grid on;
+
+subplot(3, 3, 4);
+plot(t, error_step, 'r', 'LineWidth', 1.5);
+title('Error Signal');
+ylabel('Error (V)');
+grid on;
+
+subplot(3, 3, 7);
+plot(t, (170 - pi_out_step), 'm', 'LineWidth', 1.5);
+title('Control Effort (170 - PI Action)');
+xlabel('Time (s)');
+ylabel('Effort (V)');
+grid on;
+
+% --- Column 2: Ramp Up/Down Plots ---
+subplot(3, 3, 2);
+plot(t, V_ramp_input, 'k--', 'LineWidth', 1.5); hold on;
+plot(t, V_out_ramp, 'b', 'LineWidth', 1.5);
+title('Tracking: Ramp Up/Down');
+grid on;
+
+subplot(3, 3, 5);
+plot(t, error_ramp, 'r', 'LineWidth', 1.5);
+title('Error Signal');
+grid on;
+
+subplot(3, 3, 8);
+plot(t, (170 - pi_out_ramp), 'm', 'LineWidth', 1.5);
+title('Control Effort (170 - PI Action)');
+xlabel('Time (s)');
+grid on;
+
+% --- Column 3: Sag and Swell Plots ---
+subplot(3, 3, 3);
+plot(t, V_sag_swell_input, 'k--', 'LineWidth', 1.5); hold on;
+plot(t, V_out_ss, 'b', 'LineWidth', 1.5);
+title('Tracking: Sag and Swell');
+grid on;
+
+subplot(3, 3, 6);
+plot(t, error_ss, 'r', 'LineWidth', 1.5);
+title('Error Signal');
+grid on;
+
+subplot(3, 3, 9);
+plot(t, (170 - pi_out_ss), 'm', 'LineWidth', 1.5);
+title('Control Effort (170 - PI Action)');
+xlabel('Time (s)');
 grid on;
 
 sgtitle('Closed-Loop Tracking Performance (System Output = PI Action + V_{ref})');

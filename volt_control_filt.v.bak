@@ -80,7 +80,7 @@ module volt_control_filt (
 	 
 always @ (posedge clk or posedge reset)
 	if (reset || pi_out < 0) begin
-		V_output <= VREF;
+		V_output <= VREF; // New Vref here?
 	end
 	else begin
 		V_output <= VREF - pi_out;

@@ -10,6 +10,7 @@ module inverter_top_new #(
     input wire signed [WORD_SIZE-1:0] d_in,
     input wire signed [WORD_SIZE-1:0] q_in,
 	 input wire signed [15:0] V_scale,
+	 input wire [ACC_WIDTH-1:0] phase_acc_dqz,
 
     output wire u_high, u_low,
     output wire v_high, v_low,
@@ -19,7 +20,8 @@ module inverter_top_new #(
 localparam DEAD_TIME_CYCLES = 125; //1250;
 
 wire pwm_u, pwm_v, pwm_w;
-
+// 17500 - 0.534 
+// Max - 
 // 1. Instantiate the SPWM Modulator
 spwm_new #(
     .WORD_SIZE(WORD_SIZE),
@@ -33,6 +35,7 @@ spwm_new #(
     .q_in(q_in),
     .d_in(d_in),
 	 .V_scale(V_scale),
+	 .phase_acc_dqz(phase_acc_dqz),
     .pwm_u(pwm_u),
     .pwm_v(pwm_v),
     .pwm_w(pwm_w)
