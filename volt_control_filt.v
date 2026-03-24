@@ -126,7 +126,9 @@ assign V_output_mult = V_output_val * CONVERSION;
 // 3. Scale and slice the output
 always @ (posedge clk or posedge reset) begin
     if (reset) begin
-        V_output <= 16'd0;
+        V_output <= 16'd0;		  
+	end else if (VOLT_CONTROL_OFF) begin
+			V_output <= 16'sd16350;
     end else begin
         // You were extracting [25:11]. Assuming that bit selection is still 
         // valid for your fixed-point format, we apply it to the full 35-bit product.

@@ -177,9 +177,9 @@ issp_control issp_control_inst (
     .probe      ()
 );
 
-wire GFL_mode = issp_source_bus[91];
-wire combination_mode = issp_source_bus[92];
-wire reset = issp_source_bus[90];
+wire GFL_mode = 1'b0; //issp_source_bus[91];
+wire combination_mode = 1'b0; //issp_source_bus[92];
+wire reset = SW[17]; //issp_source_bus[90];
 
 /*
 wire signed [17:0] a2_issp = $signed(issp_source_bus[89:72]);
@@ -189,13 +189,13 @@ wire signed [17:0] b1_issp = $signed(issp_source_bus[35:18]);
 wire signed [17:0] b0_issp = $signed(issp_source_bus[17:0]);
 */
 wire signed [31:0] KP_issp = 32'sd429496730;
-wire signed [15:0] VREF_issp = $signed(issp_source_bus[89:74]);
-wire signed [15:0] VMAX_issp = $signed(issp_source_bus[73:58]);
-wire signed [15:0] VMIN_issp = $signed(issp_source_bus[57:42]);
-wire signed [15:0] CONVERSION_issp = $signed(issp_source_bus[41:23]);
-wire signed [9:0] KI_issp = $signed(issp_source_bus[22:13]);
+wire signed [15:0] VREF_issp = 16'sd1800;//$signed(issp_source_bus[89:74]);
+wire signed [15:0] VMAX_issp = 16'sd19000; //$signed(issp_source_bus[73:58]);
+wire signed [15:0] VMIN_issp = 16'sd2100; //$signed(issp_source_bus[57:42]);
+wire signed [15:0] CONVERSION_issp = 16'sd10000; //$signed(issp_source_bus[41:23]);
+wire signed [9:0] KI_issp = 10'sd2; //$signed(issp_source_bus[22:13]);
 wire signed [31:0] DT_issp = 32'sd172;
-wire VOLT_CONTROL_OFF = issp_source_bus[12];
+wire VOLT_CONTROL_OFF = SW[16]; // issp_source_bus[12];
 
 /*
 wire signed [17:0] a2_issp = $signed(issp_source_bus[89:72]);

@@ -1,9 +1,9 @@
-<session jtag_chain="USB-Blaster [1-13]" jtag_device="@1: 10CL120(Y|Z)/EP3C120/.. (0x020F70DD)">
+<session jtag_chain="USB-Blaster [1-2]" jtag_device="@1: 10CL120(Y|Z)/EP3C120/.. (0x020F70DD)">
   <display_attributes is_max_probe_read_interval="1" is_write_immediate="1" probe_read_interval="1" probe_read_interval_units="s"/>
   <instance enable_logging="true" entity_name="IPLL" is_auto_node="true" name="IPLL">
     <node_ip_info instance_id="0" mfg_id="110" node_id="9" version="0"/>
     <sources>
-      <source name="source[0]" value="false"/>
+      <source name="source[0]" value="true"/>
       <source name="source[1]" value="true"/>
       <source name="source[2]" value="true"/>
       <source name="source[3]" value="false"/>
@@ -27,11 +27,11 @@
       <source name="source[21]" value="false"/>
       <source name="source[22]" value="false"/>
       <source name="source[23]" value="false"/>
-      <source name="source[24]" value="true"/>
+      <source name="source[24]" value="false"/>
       <source name="source[25]" value="false"/>
-      <source name="source[26]" value="true"/>
+      <source name="source[26]" value="false"/>
       <source name="source[27]" value="true"/>
-      <source name="source[28]" value="true"/>
+      <source name="source[28]" value="false"/>
       <source name="source[29]" value="false"/>
       <source name="source[30]" value="false"/>
       <source name="source[31]" value="true"/>
@@ -39,7 +39,7 @@
       <source name="source[33]" value="true"/>
       <source name="source[34]" value="false"/>
       <source name="source[35]" value="false"/>
-      <source name="source[36]" value="false"/>
+      <source name="source[36]" value="true"/>
       <source name="source[37]" value="false"/>
       <source name="source[38]" value="false"/>
       <source name="source[39]" value="false"/>
@@ -47,32 +47,32 @@
       <source name="source[41]" value="false"/>
       <source name="source[42]" value="false"/>
       <source name="source[43]" value="false"/>
-      <source name="source[44]" value="false"/>
+      <source name="source[44]" value="true"/>
       <source name="source[45]" value="false"/>
-      <source name="source[46]" value="false"/>
-      <source name="source[47]" value="false"/>
+      <source name="source[46]" value="true"/>
+      <source name="source[47]" value="true"/>
       <source name="source[48]" value="false"/>
-      <source name="source[49]" value="true"/>
+      <source name="source[49]" value="false"/>
       <source name="source[50]" value="false"/>
-      <source name="source[51]" value="true"/>
-      <source name="source[52]" value="true"/>
+      <source name="source[51]" value="false"/>
+      <source name="source[52]" value="false"/>
       <source name="source[53]" value="true"/>
-      <source name="source[54]" value="true"/>
-      <source name="source[55]" value="true"/>
+      <source name="source[54]" value="false"/>
+      <source name="source[55]" value="false"/>
       <source name="source[56]" value="false"/>
       <source name="source[57]" value="false"/>
       <source name="source[58]" value="false"/>
-      <source name="source[59]" value="true"/>
-      <source name="source[60]" value="true"/>
+      <source name="source[59]" value="false"/>
+      <source name="source[60]" value="false"/>
       <source name="source[61]" value="true"/>
-      <source name="source[62]" value="false"/>
-      <source name="source[63]" value="false"/>
+      <source name="source[62]" value="true"/>
+      <source name="source[63]" value="true"/>
       <source name="source[64]" value="false"/>
-      <source name="source[65]" value="true"/>
+      <source name="source[65]" value="false"/>
       <source name="source[66]" value="false"/>
-      <source name="source[67]" value="false"/>
-      <source name="source[68]" value="true"/>
-      <source name="source[69]" value="false"/>
+      <source name="source[67]" value="true"/>
+      <source name="source[68]" value="false"/>
+      <source name="source[69]" value="true"/>
       <source name="source[70]" value="false"/>
       <source name="source[71]" value="false"/>
       <source name="source[72]" value="true"/>
@@ -84,14 +84,14 @@
       <source name="source[78]" value="false"/>
       <source name="source[79]" value="false"/>
       <source name="source[80]" value="false"/>
-      <source name="source[81]" value="true"/>
+      <source name="source[81]" value="false"/>
       <source name="source[82]" value="true"/>
-      <source name="source[83]" value="false"/>
+      <source name="source[83]" value="true"/>
       <source name="source[84]" value="true"/>
       <source name="source[85]" value="false"/>
       <source name="source[86]" value="false"/>
       <source name="source[87]" value="false"/>
-      <source name="source[88]" value="true"/>
+      <source name="source[88]" value="false"/>
       <source name="source[89]" value="false"/>
       <source name="source[90]" value="false"/>
       <source name="source[91]" value="false"/>
@@ -349,6 +349,6 @@
       <alias alias="Comb_mode" name="source[92]"/>
       <alias alias="VOLT_CONTROL_OFF" name="source[12]"/>
     </alias_list>
-    <log data="71838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F0000000000000000000" max_size="8" size="8" time="0452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB9600000000" width="164"/>
+    <log data="71838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000073B500FC3000D700D700D70000000000000000000" max_size="8" size="8" time="1452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB9600000000505D2C9600000000" width="164"/>
   </instance>
 </session>
