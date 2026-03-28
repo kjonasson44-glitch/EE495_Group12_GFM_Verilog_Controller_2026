@@ -1,4 +1,4 @@
-<session jtag_chain="USB-Blaster [1-13]" jtag_device="@1: 10CL120(Y|Z)/EP3C120/.. (0x020F70DD)">
+<session jtag_chain="USB-Blaster [1-8]" jtag_device="@1: 10CL120(Y|Z)/EP3C120/.. (0x020F70DD)">
   <display_attributes is_max_probe_read_interval="1" is_write_immediate="1" probe_read_interval="1" probe_read_interval_units="s"/>
   <instance enable_logging="true" entity_name="IPLL" is_auto_node="true" name="IPLL">
     <node_ip_info instance_id="0" mfg_id="110" node_id="9" version="0"/>
@@ -15,7 +15,7 @@
       <source name="source[9]" value="true"/>
       <source name="source[10]" value="false"/>
       <source name="source[11]" value="true"/>
-      <source name="source[12]" value="false"/>
+      <source name="source[12]" value="true"/>
       <source name="source[13]" value="false"/>
       <source name="source[14]" value="true"/>
       <source name="source[15]" value="false"/>
@@ -93,7 +93,7 @@
       <source name="source[87]" value="false"/>
       <source name="source[88]" value="true"/>
       <source name="source[89]" value="false"/>
-      <source name="source[90]" value="false"/>
+      <source name="source[90]" value="true"/>
       <source name="source[91]" value="false"/>
       <source name="source[92]" value="false"/>
       <source name="source[93]" value="false"/>
@@ -348,6 +348,7 @@
       <alias alias="GFL_mode" name="source[91]"/>
       <alias alias="Comb_mode" name="source[92]"/>
       <alias alias="VOLT_CONTROL_OFF" name="source[12]"/>
+      <alias alias="PWM_SW_OFF" name="source[93]"/>
     </alias_list>
     <log data="71838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F000000000000000000071838A7003D9CFAF38050F0000000000000000000" max_size="8" size="8" time="0452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB96000000001452FB9600000000" width="164"/>
   </instance>

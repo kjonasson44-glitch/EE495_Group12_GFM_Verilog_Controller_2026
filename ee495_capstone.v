@@ -142,14 +142,28 @@ assign GPIO[22] = CONVST;
 (* noprune *) assign GPIO[27] = w_low;
 */
 
-(* noprune *) assign GPIO[23] = u_high;
-(* noprune *) assign GPIO[19] = u_low;
 
-(* noprune *) assign GPIO[17] = v_high;
-(* noprune *) assign GPIO[21] = v_low;
+(* noprune *) assign GPIO[23] = PWM_SW_OFF ? 1'b0 : u_high;
+(* noprune *) assign GPIO[19] = PWM_SW_OFF ? 1'b0 : u_low;
 
-(* noprune *) assign GPIO[29] = w_high;
-(* noprune *) assign GPIO[25] = w_low;
+(* noprune *) assign GPIO[17] = PWM_SW_OFF ? 1'b0 : v_high;
+(* noprune *) assign GPIO[21] = PWM_SW_OFF ? 1'b0 : v_low;
+
+(* noprune *) assign GPIO[29] = PWM_SW_OFF ? 1'b0 : w_high;
+(* noprune *) assign GPIO[25] = PWM_SW_OFF ? 1'b0 : w_low;
+
+	
+	/*
+		(* noprune *) assign GPIO[23] = u_high;
+	(* noprune *) assign GPIO[19] = u_low;
+
+	(* noprune *) assign GPIO[17] = v_high;
+	(* noprune *) assign GPIO[21] = v_low;
+
+	(* noprune *) assign GPIO[29] = w_high;
+	(* noprune *) assign GPIO[25] = w_low;
+	*/
+
 
 
 (* noprune *) assign GPIO[24] = 0;
@@ -180,7 +194,7 @@ issp_control issp_control_inst (
 wire GFL_mode = issp_source_bus[91];
 wire combination_mode = issp_source_bus[92];
 wire reset = issp_source_bus[90];
-
+wire PWM_SW_OFF = issp_source_bus[93]; // Assuming bit 93 is unused; adjust if needed
 /*
 wire signed [17:0] a2_issp = $signed(issp_source_bus[89:72]);
 wire signed [17:0] a1_issp = $signed(issp_source_bus[71:54]);
@@ -189,7 +203,7 @@ wire signed [17:0] b1_issp = $signed(issp_source_bus[35:18]);
 wire signed [17:0] b0_issp = $signed(issp_source_bus[17:0]);
 */
 wire signed [31:0] KP_issp = 32'sd429496730;
-wire signed [15:0] VREF_issp = $signed(issp_source_bus[89:74]);
+wire signed [15:0] VREF_issp = $signed(issp_source_bus[89:74]); //19000 - 120 at 100% 144, - 19000/4
 wire signed [15:0] VMAX_issp = $signed(issp_source_bus[73:58]);
 wire signed [15:0] VMIN_issp = $signed(issp_source_bus[57:42]);
 wire signed [15:0] CONVERSION_issp = $signed(issp_source_bus[41:23]);

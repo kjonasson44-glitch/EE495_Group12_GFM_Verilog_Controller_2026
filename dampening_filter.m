@@ -143,7 +143,7 @@ amplitude = 0.25;           % Sinusoid peak amplitude
 
 t_sine = 0:Ts:t_final;     
 % Combined Input: Sinusoid + DC Offset
-u_sine = dc_offset + amplitude * sin(2*pi*f_in*t_sine); 
+u_sine = dc_offset + amplitude * sin(2*pi*f_in*t_sine/101); 
 
 % --- Comparison for Damping D ---
 J_fixed = 0.3;  % Seems to scale the gain of sinusoids significantly
