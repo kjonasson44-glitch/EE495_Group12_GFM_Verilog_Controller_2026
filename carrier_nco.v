@@ -1,3 +1,22 @@
+// =============================================================================
+// Module Name:  carrier_nco
+// Description:  Triangle wave Numerically Controlled Oscillator (NCO).
+//               Generates a bipolar, symmetric triangle carrier signal.
+//
+// Parameters:
+//   - WORD_SIZE: Resolution of the output carrier (default 18 bits).
+//   - ACC_WIDTH: Precision of the phase accumulator (default 32 bits).
+//
+// Architecture:
+//   - Phase Accumulator: A free-running counter incremented by the Frequency 
+//     Control Word (fcw) to determine output frequency.
+//   - Triangle Mapping: A 4-quadrant piecewise linear logic that transforms 
+//     the raw phase ramp into a rising and falling triangle waveform.
+//
+// Mathematical Basis:
+//   - Output Frequency: f_out = fcw * f_clk / 2^32
+// =============================================================================
+
 module carrier_nco #(
     parameter WORD_SIZE = 18,
     parameter ACC_WIDTH = 32
@@ -6,7 +25,7 @@ module carrier_nco #(
     input  wire reset,
     input  wire clk_en,
     input  wire [ACC_WIDTH-1:0] fcw,
-    output reg signed [WORD_SIZE-1:0] carrier
+    output reg  signed [WORD_SIZE-1:0] carrier
 );
 
     reg [ACC_WIDTH-1:0] phase_acc;
@@ -35,6 +54,5 @@ module carrier_nco #(
             endcase
         end
     end
-    
 
 endmodule

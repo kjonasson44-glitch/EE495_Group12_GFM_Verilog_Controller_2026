@@ -8,6 +8,7 @@ module inverter_interface #(
     output reg  gate_h,
     output reg  gate_l
 );
+    // Registers count dead time
     reg [15:0] count_h, count_l;
 
     always @(posedge clk) begin
@@ -29,4 +30,5 @@ module inverter_interface #(
             else gate_l <= 1'b1;
         end
     end
+
 endmodule

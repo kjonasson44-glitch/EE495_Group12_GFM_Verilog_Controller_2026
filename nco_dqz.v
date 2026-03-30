@@ -16,7 +16,7 @@
 //                  Bit [30] : Address mirroring
 //   - Look-up:     1024-word ROM (10-bit address) effectively yields 12-bit 
 //                  phase resolution with symmetry logic.
-//   - Latency:     3 Clock Cycles (1: Addr Gen, 2: ROM Access, 3: Sign Adj).
+//   - Latency:     2 Clock Cycles (1: Addr Gen, 2: ROM Access).
 //
 // Performance Metrics (Theoretical):
 //   - SQNR:        ~110.1 dB (Based on 18-bit amplitude quantization)
@@ -36,63 +36,60 @@ module nco_dqz #(
     input  wire signed [ACC_WIDTH-1:0] fcw, 
     output wire signed [WORD_SIZE-1:0] sine,   // Changed to wire
     output wire signed [WORD_SIZE-1:0] cosine,  // Changed to wire
-	 output reg signed [ACC_WIDTH-1:0] phase_acc_dqz
+    output reg  signed [ACC_WIDTH-1:0] phase_acc_dqz
 );
 
-localparam SIGN_BIT   = ACC_WIDTH - 1; // Bit 31
-localparam MIRROR_BIT = ACC_WIDTH - 2; // Bit 30
-localparam ADDR_START = ACC_WIDTH - 3; // Bit 29
-localparam COS_OFFSET = 32'h4000_0000; 
+    localparam SIGN_BIT   = ACC_WIDTH - 1; // Bit 31
+    localparam MIRROR_BIT = ACC_WIDTH - 2; // Bit 30
+    localparam ADDR_START = ACC_WIDTH - 3; // Bit 29
+    localparam COS_OFFSET = 32'h4000_0000; 
 
-// ----- Accumlators ----- //
-reg  [ACC_WIDTH-1:0] phase_acc; 
-wire [ACC_WIDTH-1:0] phase_cos;
+    // ----- Accumlators ----- //
+    reg  [ACC_WIDTH-1:0] phase_acc; 
+    wire [ACC_WIDTH-1:0] phase_cos;
 
-// ----- Data ----- //
-wire signed [WORD_SIZE-1:0] data_sin, data_cos;
+    // ----- Data ----- //
+    wire signed [WORD_SIZE-1:0] data_sin, data_cos;
 
-// ----- Pipelines ----- //
-reg sin_sign_pipe;
-reg cos_sign_pipe;
+    // ----- Pipelines ----- //
+    reg sin_sign_pipe;
+    reg cos_sign_pipe;
 
-// ----- Phase Accumulators ----- //
-always @(posedge clk) begin
-    if (reset) phase_acc_dqz <= 0;
-    else if (clk_en) begin   
-        phase_acc_dqz <= phase_acc_dqz + fcw;
+    // ----- Phase Accumulators ----- //
+    always @(posedge clk) begin
+        if (reset) phase_acc_dqz <= 0;
+        else if (clk_en) begin   
+            phase_acc_dqz <= phase_acc_dqz + fcw;
+        end
     end
-end
 
-assign phase_cos = phase_acc_dqz - COS_OFFSET; 
+    assign phase_cos = phase_acc_dqz - COS_OFFSET; 
 
-// ----- Combinational Address Generation ----- //
-// Eliminated 1 clock cycle of delay here
-wire [ADDR_SIZE-1:0] addr_sin = phase_acc_dqz[MIRROR_BIT] ? ~phase_acc_dqz[ADDR_START:ADDR_START-ADDR_SIZE+1] : phase_acc_dqz[ADDR_START:ADDR_START-ADDR_SIZE+1];
-wire [ADDR_SIZE-1:0] addr_cos = phase_cos[MIRROR_BIT] ? ~phase_cos[ADDR_START:ADDR_START-ADDR_SIZE+1] : phase_cos[ADDR_START:ADDR_START-ADDR_SIZE+1];
+    // ----- Combinational Address Generation ----- //
+    wire [ADDR_SIZE-1:0] addr_sin = phase_acc_dqz[MIRROR_BIT] ? ~phase_acc_dqz[ADDR_START:ADDR_START-ADDR_SIZE+1] : phase_acc_dqz[ADDR_START:ADDR_START-ADDR_SIZE+1];
+    wire [ADDR_SIZE-1:0] addr_cos = phase_cos[MIRROR_BIT] ? ~phase_cos[ADDR_START:ADDR_START-ADDR_SIZE+1] : phase_cos[ADDR_START:ADDR_START-ADDR_SIZE+1];
 
-// ----- Sign Pipelining ----- //
-// Only 1 pipeline stage needed now to match the 1-cycle ROM delay
-always @* begin
-    if (reset) begin
-        sin_sign_pipe <= 0;
-        cos_sign_pipe <= 0;
-    end else begin
-        sin_sign_pipe <= phase_acc_dqz[SIGN_BIT];
-        cos_sign_pipe <= phase_cos[SIGN_BIT];
+    // ----- Sign Pipelining ----- //
+    always @(*) begin
+        if (reset) begin
+            sin_sign_pipe <= 0;
+            cos_sign_pipe <= 0;
+        end else begin
+            sin_sign_pipe <= phase_acc_dqz[SIGN_BIT];
+            cos_sign_pipe <= phase_cos[SIGN_BIT];
+        end
     end
-end
 
-sine_rom lut (
-    .clk(clk),
-    .addr_a(addr_sin),
-    .data_a(data_sin),
-    .addr_b(addr_cos),
-    .data_b(data_cos)
-);
+    sine_rom lut (
+        .clk(clk),
+        .addr_a(addr_sin),
+        .data_a(data_sin),
+        .addr_b(addr_cos),
+        .data_b(data_cos)
+    );
 
-// ----- Combinational Amplitude Negation ----- //
-// Eliminated 1 clock cycle of delay here
-assign cosine   = sin_sign_pipe ? -data_sin : data_sin;
-assign sine = cos_sign_pipe ?  -data_cos : data_cos;
+    // ----- Combinational Amplitude Negation ----- //
+    assign cosine   = sin_sign_pipe ? -data_sin : data_sin;
+    assign sine     = cos_sign_pipe ? -data_cos : data_cos;
 
 endmodule
